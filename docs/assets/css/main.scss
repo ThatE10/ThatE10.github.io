@@ -1,0 +1,18 @@
+---
+---
+
+@import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}";
+@import "minimal-mistakes";
+
+// Remove opacity and transition effects completely
+@media (min-width: 64em) {
+  .sidebar {
+    opacity: 1 !important;
+    -webkit-transition: none !important;
+    transition: none !important;
+  }
+
+  .sidebar:hover {
+    opacity: 1 !important;
+  }
+}
