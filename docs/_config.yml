@@ -1,0 +1,73 @@
+# Site settings
+title: Ethan's Internet Nook
+description: >-
+  Portfolio of Ethan Nguyen — safe, scalable, interpretable AI systems. ML research, outreach, and engineering.
+baseurl: "" # Required for user sites
+url: "https://ThatE10.github.io" # Full GitHub Pages URL for user site
+github_username: ThatE10
+repository: ThatE10/ThatE10.github.io
+
+# Theme
+remote_theme: "mmistakes/minimal-mistakes@4.24.0"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Plugins
+plugins:
+  - jekyll-include-cache
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Directories to include in build
+include:
+  - _pages
+  - _includes
+  - assets
+
+# Exclude unnecessary files from build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/
+
+# Defaults (for page-wide layout control)
+defaults:
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true  # Changed from false to true
+      classes: wide
+
+# Minimal Mistakes specific settings
+minimal_mistakes_skin: default
+locale: en-US
+search: false
+paginate: false
+
+# Author settings (this is the correct way for Minimal Mistakes)
+author:
+  name: Ethan Nguyen
+  avatar: /assets/images/ethan-portrait.jpg
+  bio: "I build safe, scalable, and interpretable AI systems."
+  location: Charlotte, NC
+  links:
+    - label: "Google Scholar"
+      icon: "fas fa-graduation-cap"
+      url: "https://scholar.google.com/citations?hl=en&user=MHFb7IIAAAAJ"
+    - label: "GitHub"
+      icon: "fab fa-github"
+      url: "https://github.com/ThatE10"
+    - label: "LinkedIn"
+      icon: "fab fa-linkedin"
+      url: "https://www.linkedin.com/in/that-ethan-nguyen/"
+    - label: "LessWrong"
+      icon: "fas fa-brain"
+      url: "https://www.lesswrong.com/users/thate10"
+    - label: "Blue Dot"
+      icon: "fas fa-map-marker-alt"
+      url: "https://community.bluedot.org/u/fb096b95"
