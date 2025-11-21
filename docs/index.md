@@ -17,6 +17,7 @@ I'm an undergraduate student at UNC Charlotte with 3 years research experience i
 My work spans across:
 - Mechanistic Interpretablity on Large Language models
 - Mechanistic Transfer
+- AI Safety
 - Scalable optimization methods
 - Community-centered AI education (Hobby)
 
