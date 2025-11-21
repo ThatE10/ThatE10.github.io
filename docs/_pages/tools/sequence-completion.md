@@ -3,8 +3,8 @@
 # Save this file in your _pages directory
 
 layout: single
-title: "Sequence Completion Algorithm"
-permalink: /sequence-completion/
+title: "Linear Sequence Completion Algorithm"
+permalink: /tools/sequence-completion/
 author_profile: true
 classes: wide
 ---
@@ -414,7 +414,7 @@ classes: wide
 const { useState, useEffect, useRef } = React;
 
 const SequenceCompletionUI = () => {
-  const [sequence, setSequence] = useState([1, 1, NaN, 3, 5]);
+  const [sequence, setSequence] = useState([0, 1, 1, NaN, 3, 5]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [predictionHistory, setPredictionHistory] = useState({});
   const [showSettings, setShowSettings] = useState(false);
@@ -433,7 +433,7 @@ const SequenceCompletionUI = () => {
   const chartInstanceRef = useRef(null);
 
   // API endpoint - update this to your actual API URL
-  const API_URL = 'http://127.0.0.1:8080/predict/stream';
+  const API_URL = 'https://serverirls-655187977366.us-east1.run.app/predict/stream';
 
   // Calculate observed values count and max rank
   const observedCount = sequence.filter(val => !isNaN(val)).length;
@@ -674,7 +674,15 @@ const SequenceCompletionUI = () => {
     if (value === '' || value === '?') {
       newSequence[index] = NaN;
     } else {
-      const num = parseFloat(value);
+      // Use parseFloat. If the value is just '-', this returns NaN.
+      const num = parseFloat(value); 
+      
+      // CRITICAL FIX: Only update the sequence value if it's a valid number.
+      // If the user types '1' then deletes it to '-', value will be '-' and num will be NaN.
+      // By only using `newSequence[index] = isNaN(num) ? NaN : num;` we ensure the 
+      // underlying sequence state is only updated with valid numbers or NaN.
+      // The input field now uses `defaultValue` so it correctly holds the raw string ('-') 
+      // until the component re-renders based on the sequence update.
       newSequence[index] = isNaN(num) ? NaN : num;
     }
     
@@ -795,17 +803,30 @@ const SequenceCompletionUI = () => {
 
     console.log('Sending payload:', JSON.stringify(payload, null, 2));
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
     try {
       const response = await fetch(`${API_URL}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal // Apply the timeout signal
       });
+      
+      clearTimeout(timeoutId); // Clear timeout if fetch succeeds
 
       if (!response.ok) {
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
+        // This handles HTTP error statuses like 404, 500, etc.
+        throw new Error(`API returned status ${response.status} ${response.statusText}`);
+      }
+      
+      // Check for content type for streaming
+      const contentType = response.headers.get('Content-Type');
+      if (!contentType || !contentType.includes('text/event-stream')) {
+        throw new Error('Invalid response type. Expected Server-Sent Events (text/event-stream).');
       }
 
       const reader = response.body.getReader();
@@ -858,37 +879,16 @@ const SequenceCompletionUI = () => {
       
     } catch (err) {
       console.error('Processing error:', err);
-      setError(err.message);
       
-      // Fallback to demo mode
-      const totalRounds = 10;
-      for (let round = 0; round < totalRounds; round++) {
-        await new Promise(resolve => setTimeout(resolve, 600));
-        
-        const convergenceFactor = (round + 1) / totalRounds;
-        
-        // Generate demo sigma values
-        const demoSigma = [
-          7.7 + Math.random() * 0.05 - (1 - convergenceFactor) * 0.5,
-          0.25 - convergenceFactor * 0.03 + Math.random() * 0.02,
-          0.12 - convergenceFactor * 0.06 + Math.random() * 0.01
-        ];
-        
-        const demoError = Math.max(0.001, 0.5 * (1 - convergenceFactor));
-        
-        addSigmaData(demoSigma, round, demoError);
-        
-        missingIndices.forEach((boxIndex) => {
-          const baseValue = Math.sin(boxIndex) * 10;
-          const noise = (1 - convergenceFactor) * (Math.random() - 0.5) * 5;
-          
-          const value = baseValue + noise;
-          const sigma = Math.max(0.1, 2 * (1 - convergenceFactor) + Math.random() * 0.5);
-          
-          addPrediction(boxIndex, value, sigma, demoError);
-        });
+      if (err.name === 'AbortError') {
+         setError('ERROR: Inference server unresponsive (Request timed out after 30 seconds). Please try again soon.');
+      } else {
+         // Display a generic error for connection issues, parsing errors, or bad status
+         setError('ERROR: Inference server unresponsive. Please try again soon.');
       }
+      
     } finally {
+      clearTimeout(timeoutId);
       setIsProcessing(false);
     }
   };
@@ -903,16 +903,13 @@ const SequenceCompletionUI = () => {
     const predictions = predictionHistory[index] || [];
     const latestPrediction = predictions[predictions.length - 1];
 
-    let displayValue = '';
+    // Determine the value to show in the input box when not predicted
     let inputValue = '';
     
-    if (isMissing) {
-      displayValue = '?';
-      inputValue = '';
-    } else {
-      displayValue = value.toString();
+    if (!isMissing) {
       inputValue = value.toString();
     }
+    // If it's missing (NaN), inputValue remains '' to show the placeholder
 
     const boxStyle = latestPrediction ? {
       backgroundColor: getPredictionColor(latestPrediction.confidence, 0.9),
@@ -932,7 +929,11 @@ const SequenceCompletionUI = () => {
           ) : (
             <input
               type="text"
-              value={inputValue}
+              // FIX: Removed `value={inputValue}` and replaced with `defaultValue`.
+              // This makes the input uncontrolled, allowing the user to type 
+              // characters like '-' without the component state immediately 
+              // reverting the value due to `parseFloat('-')` returning NaN.
+              defaultValue={inputValue} 
               onChange={(e) => handleBoxInput(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               disabled={isProcessing}
@@ -975,9 +976,7 @@ const SequenceCompletionUI = () => {
 
         {error && (
           <div className="error-banner">
-            <strong>API Connection Error:</strong> {error}
-            <br />
-            <small>Running in demo mode. Update API_URL in the code to connect to your backend.</small>
+            <strong>Connection Error:</strong> {error}
           </div>
         )}
 
