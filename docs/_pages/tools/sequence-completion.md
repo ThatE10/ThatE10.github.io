@@ -594,12 +594,34 @@ class Orchestrator {
         if(this.currentStage === 0) {
             s.fill(51); s.noStroke();
             s.text("Enter an incomplete recursive sequence", (this.w / this.globalScale) / 2, 100);
+        } else if(this.currentStage === -1) {
+            // Error state
+            let cx = (this.w / this.globalScale) / 2;
+            s.noStroke();
+            // Red icon circle
+            s.fill(220, 60, 60, 40);
+            s.ellipse(cx, 130, 64, 64);
+            s.fill(220, 60, 60);
+            s.textSize(28); s.text("✕", cx, 130);
+            // Error title
+            s.textSize(17); s.fill(180, 30, 30);
+            s.text(this.errorTitle || "Connection Error", cx, 175);
+            // Error detail
+            s.textSize(13); s.fill(100, 40, 40);
+            s.text(this.errorDetail || "Could not reach the IRLS server at " + this.errorUrl, cx, 200);
+            s.fill(130, 100, 100); s.textSize(12);
+            s.text("Make sure the API server is running, then press Retry.", cx, 222);
         } else {
             [...this.nodes, ...this.labels, ...this.hx, ...this.omega, ...this.wmat, ...this.brackets].forEach(n => n.show(s));
         }
         s.pop();
     }
-}
+    stageError(title, detail, url) {
+        this.currentStage = -1;
+        this.errorTitle = title;
+        this.errorDetail = detail;
+        this.errorUrl = url || '';
+    }
 
 const SequenceCompletionUI = () => {
   const [stage, setStage] = useState(0); 
@@ -613,6 +635,7 @@ const SequenceCompletionUI = () => {
   const [sigmaHistory, setSigmaHistory] = useState([]);
   const [wMatrix, setWMatrix] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
   const p5ContainerRef = useRef(null);
   const p5Instance = useRef(null);
   const chartRef = useRef(null);
@@ -747,6 +770,7 @@ const SequenceCompletionUI = () => {
     }
     setStage(0);
     setIsProcessing(false);
+    setErrorMessage(null);
     setSigmaHistory([]);
     setWMatrix(null);
     setPredictions({});
@@ -758,6 +782,12 @@ const SequenceCompletionUI = () => {
         chartInstanceRef.current.destroy();
         chartInstanceRef.current = null;
     }
+  };
+
+  const showError = (title, detail) => {
+    setErrorMessage({ title, detail });
+    setIsProcessing(false);
+    if (orchestratorRef.current) orchestratorRef.current.stageError(title, detail, API_URL);
   };
 
   const runOptimization = async () => {
@@ -780,13 +810,18 @@ const SequenceCompletionUI = () => {
           body: JSON.stringify(payload),
           signal: controller.signal
         });
+
+        if (!response.ok) {
+          showError('Server Error', `Server responded with status ${response.status}: ${response.statusText}`);
+          return;
+        }
         
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
+        let receivedAny = false;
 
         while (true) {
-          // Check if aborted before each read
           if (controller.signal.aborted) break;
           const { done, value } = await reader.read();
           if (done) break;
@@ -797,28 +832,41 @@ const SequenceCompletionUI = () => {
           for (const line of lines) {
             if (controller.signal.aborted) break;
             if (line.startsWith('data: ')) {
+              let parsed;
               try {
-                const parsed = JSON.parse(line.substring(6));
-                if (parsed.type === 'prediction_update') {
-                  const data = parsed.data;
-                  setSigmaHistory(prev => [...prev, { iteration: data.iteration, sigma: data.sigma }]);
-                  if (data.w_matrix) setWMatrix(data.w_matrix);
-                  if(orchestratorRef.current) orchestratorRef.current.stage6Update(data.elements_updated, data.w_matrix);
-                  await new Promise(r => setTimeout(r, 600));
-                } else if (parsed.type === 'completion') {
-                    setStage(7);
-                    if(orchestratorRef.current) orchestratorRef.current.stage7();
+                parsed = JSON.parse(line.substring(6));
+              } catch (e) {
+                showError('Malformed Response', `Could not parse server packet: ${line.substring(6, 60)}...`);
+                return;
+              }
+              receivedAny = true;
+              if (parsed.type === 'prediction_update') {
+                const data = parsed.data;
+                if (!Array.isArray(data.sigma) || !Array.isArray(data.elements_updated)) {
+                  showError('Malformed Response', 'Server packet missing expected fields (sigma / elements_updated).');
+                  return;
                 }
-              } catch (e) {}
+                setSigmaHistory(prev => [...prev, { iteration: data.iteration, sigma: data.sigma }]);
+                if (data.w_matrix) setWMatrix(data.w_matrix);
+                if(orchestratorRef.current) orchestratorRef.current.stage6Update(data.elements_updated, data.w_matrix);
+                await new Promise(r => setTimeout(r, 600));
+              } else if (parsed.type === 'completion') {
+                  setStage(7);
+                  if(orchestratorRef.current) orchestratorRef.current.stage7();
+              }
             }
           }
+        }
+        if (!receivedAny && !controller.signal.aborted) {
+          showError('Empty Response', 'Server connected but returned no data. Check sequence / rank settings.');
         }
       } catch (err) {
         if (err.name === 'AbortError') {
           console.log('Fetch aborted.');
+        } else if (err.name === 'TypeError' || err.message.includes('fetch')) {
+          showError('Cannot Connect to Server', `Failed to reach ${API_URL} — is the API running?`);
         } else {
-          console.error('API Error:', err);
-          setStage(0);
+          showError('Unexpected Error', err.message || 'An unknown error occurred.');
         }
       } finally {
         setIsProcessing(false);
@@ -936,10 +984,19 @@ const SequenceCompletionUI = () => {
                   </div>
                 ) : (
                   <div style={{position:'absolute', top:'8px', right:'12px', zIndex:11, display:'flex', gap:'6px', alignItems:'center'}}>
-                      {stage > 0 && stage < 6 && (
-                          <button className="primary-btn" style={{padding:'5px 12px', fontSize:'0.85rem'}} onClick={handleNextStage}>Next</button>
+                      {errorMessage ? (
+                        <>
+                          <button className="primary-btn" style={{padding:'5px 12px', fontSize:'0.85rem', background:'#dc3545', borderColor:'#dc3545'}} onClick={() => { setErrorMessage(null); runOptimization(); }}>Retry</button>
+                          <button className="secondary-btn" style={{padding:'5px 10px', fontSize:'0.85rem'}} onClick={handleReset}>Reset</button>
+                        </>
+                      ) : (
+                        <>
+                          {stage > 0 && stage < 6 && (
+                              <button className="primary-btn" style={{padding:'5px 12px', fontSize:'0.85rem'}} onClick={handleNextStage}>Next</button>
+                          )}
+                          <button className="secondary-btn" style={{padding:'5px 10px', fontSize:'0.85rem'}} onClick={handleReset}>Reset</button>
+                        </>
                       )}
-                      <button className="secondary-btn" style={{padding:'5px 10px', fontSize:'0.85rem'}} onClick={handleReset}>Reset</button>
                   </div>
                 )}
                 
