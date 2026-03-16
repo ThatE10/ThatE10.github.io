@@ -651,7 +651,7 @@ const SequenceCompletionUI = () => {
     };
   }, []);
 
-  const API_URL = 'http://127.0.0.1:8080/predict/stream';
+  const API_URL = 'https://serverirls-655187977366.us-east1.run.app/predict/stream';
 
   // MathJax Typesetting trigger
   useEffect(() => {
