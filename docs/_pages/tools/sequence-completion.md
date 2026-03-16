@@ -622,6 +622,7 @@ class Orchestrator {
         this.errorDetail = detail;
         this.errorUrl = url || '';
     }
+} // end Orchestrator
 
 const SequenceCompletionUI = () => {
   const [stage, setStage] = useState(0); 
