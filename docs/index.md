@@ -6,13 +6,13 @@ author_profile: true
 classes: wide
 ---
 
-I want to build **safe** and **interpretable AI** systems. My work focuses on making deep learning more accessible and easier to understand for real-world system via signal processing and non-convex optimization techniques applied to mech interp tools.
+I **interpret** LLM to increase **trust** and **safety** in real world systems using the underlying geometry of feature manifolds and non-convex objectives. I deeply believe there could be substantial gains in safety, reliablity, & preformance through pragmatic mechanistic interpretablity.  
 
 ---
 
 ## About Me
 
-I'm an undergraduate student at UNC Charlotte with 3 years research experience in non-convex optimization advised under [Christian Kümmerle](https://webpages.charlotte.edu/~ckuemme1/). I am currently looking at PhD program and potential mentors. I used to lead Charlotte AI Research, a student organization that creates an environment for student growth and exploration.
+I'm an undergraduate mathematics and computer science double student at UNC Charlotte with 3 years research experience in non-convex optimization advised under [Christian Kümmerle](https://ckuemmerle.com/home/). I am currently looking for mentorship to help refine my research taste and execution. I used to lead Charlotte AI Research, a student organization that creates an environment for student growth and exploration.
 
 My work spans across:
 - Mechanistic Interpretablity on Large Language models
