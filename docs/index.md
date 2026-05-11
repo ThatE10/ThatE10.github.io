@@ -12,7 +12,7 @@ I **interpret** LLMs to increase **trust** and **safety** in real world systems 
 
 ## About Me
 
-I'm an undergraduate mathematics and computer science double student at UNC Charlotte with 3 years research experience in non-convex optimization advised under [Christian Kümmerle](https://ckuemmerle.com/home/). I am currently looking for mentorship to help refine my research taste and execution. I used to lead Charlotte AI Research, a student organization that creates an environment for student growth and exploration.
+I'm an undergraduate mathematics and computer science double student at the University of North Carolina Charlotte with 3.5 years research experience in non-convex optimization advised under [Christian Kümmerle](https://ckuemmerle.com/home/). I am currently looking for mentorship to help refine my research taste and execution. I used to lead Charlotte AI Research, a student organization that creates an environment for student growth and exploration.
 
 My work spans across:
 - Mechanistic Interpretablity on Large Language models
