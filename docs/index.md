@@ -6,7 +6,7 @@ author_profile: true
 classes: wide
 ---
 
-I **interpret** LLM to increase **trust** and **safety** in real world systems using the underlying geometry of feature manifolds and non-convex objectives. I deeply believe there could be substantial gains in safety, reliablity, & preformance through pragmatic mechanistic interpretablity.  
+I **interpret** LLMs to increase **trust** and **safety** in real world systems using the underlying geometry of feature manifolds and non-convex objectives. I deeply believe there could be substantial gains in safety, reliablity, & preformance through pragmatic mechanistic interpretablity.  
 
 ---
 
