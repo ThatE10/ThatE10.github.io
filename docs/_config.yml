@@ -56,15 +56,19 @@ author:
   bio: "I build safe, scalable, and interpretable AI systems."
   location: Charlotte, NC, USA 🦅
   links:
-    - label: "LinkedIn"
-      icon: "fab fa-linkedin"
-      url: "https://www.linkedin.com/in/that-ethan-nguyen/"
     - label: "GitHub"
       icon: "fab fa-github"
       url: "https://github.com/ThatE10"
+    - label: "CV"
+      icon: "fas fa-file"
+      url: "https://docs.google.com/document/d/1Yg-dObFKN_EfkT3dJJqFO5eTYOaExlIg_x6iFjj0Zwg/edit?tab=t.0"
     - label: "Google Scholar"
       icon: "fas fa-graduation-cap"
       url: "https://scholar.google.com/citations?hl=en&user=MHFb7IIAAAAJ"
+    - label: "LinkedIn"
+      icon: "fab fa-linkedin"
+      url: "https://www.linkedin.com/in/that-ethan-nguyen/"
     - label: "LessWrong"
       icon: "fas fa-brain"
       url: "https://www.lesswrong.com/users/thate10"
+    
