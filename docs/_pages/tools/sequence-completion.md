@@ -509,7 +509,7 @@ class Orchestrator {
        if (this.missingNodes && x_arr) {
            this.missingNodes.forEach(({ node, varId }) => {
                if (x_arr[varId] !== undefined) {
-                   let val = Number(x_arr[varId]).toFixed(2);
+                   let val = Number(x_arr[varId]).toFixed(1);
                    node.text = val;
                    node.color([60, 160, 60]); // turn green as values populate
                }
@@ -519,7 +519,7 @@ class Orchestrator {
        if (x_arr) {
            this.hx.forEach(hn => {
                if (hn.varId !== undefined && x_arr[hn.varId] !== undefined) {
-                   hn.text = Number(x_arr[hn.varId]).toFixed(2);
+                   hn.text = Number(x_arr[hn.varId]).toFixed(1);
                    hn.color([60, 160, 60]);
                }
            });
@@ -531,7 +531,7 @@ class Orchestrator {
                if(!row_data) continue;
                for(let j=0; j<this.c; j++) {
                    if (this.wmat[idx] && row_data[j] !== undefined) {
-                       this.wmat[idx].text = Number(row_data[j]).toFixed(2);
+                       this.wmat[idx].text = Number(row_data[j]).toFixed(1);
                    }
                    idx++;
                }
@@ -540,7 +540,7 @@ class Orchestrator {
            this.wmat.forEach((w, i) => {
                try {
                   let flat = w_grid.flat();
-                  if(flat[i] !== undefined) w.text = Number(flat[i]).toFixed(2);
+                  if(flat[i] !== undefined) w.text = Number(flat[i]).toFixed(1);
                } catch(e) {}
            });
        }
