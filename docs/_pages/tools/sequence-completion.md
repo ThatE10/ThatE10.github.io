@@ -546,35 +546,43 @@ class Orchestrator {
        }
     }
     stage7() {
-        this.currentStage = 7;
-        let cx = (this.w / this.globalScale) / 2;
-        this.hx.forEach(n => n.fade(0));
-        this.wmat.forEach(n => n.fade(0));
-        this.labels.forEach(n => n.fade(0));
-        this.brackets.forEach(n => n.fade(0));
-        
-        // nodes = [original S̄ row (first half), S_x row (second half)]
-        let half = this.nodes.length / 2;
-        let sBarNodes = this.nodes.slice(0, half);  // original S̄ — fade out
-        let sxNodes = this.nodes.slice(half);         // S_x with recovered values — show
-        
-        sBarNodes.forEach(n => n.fade(0));
-        
-        let seqWidth = sxNodes.length * 60;
-        let startX = cx - seqWidth / 2 + 30;
-        
-        // Spawn \bar{S_x} = label fading in
-        let fn = new AnimNode("S̄x =", startX - 75, 220);
-        fn.scale = 1.6;
-        fn.alpha = 0; fn.fade(255);
-        this.labels.push(fn);
-        
-        sxNodes.forEach((n, i) => {
-            n.tscale = 1.6;
-            n.move(startX + i*60, 220);
-            n.fade(255);
-        });
-    }
+    this.currentStage = 7;
+    let cx = (this.w / this.globalScale) / 2;
+    this.hx.forEach(n => n.fade(0));
+    this.wmat.forEach(n => n.fade(0));
+    this.labels.forEach(n => n.fade(0));
+    this.brackets.forEach(n => n.fade(0));
+    
+    // nodes = [original S̄ row (first half), S_x row (second half)]
+    let half = this.nodes.length / 2;
+    let sBarNodes = this.nodes.slice(0, half);  // original S̄ — fade out
+    let sxNodes = this.nodes.slice(half);         // S_x with recovered values — show
+    
+    sBarNodes.forEach(n => n.fade(0));
+    
+    // Format all sxNodes text to one decimal place
+    sxNodes.forEach(n => {
+        if (n.text && !isNaN(parseFloat(n.text))) {
+            n.text = Number(n.text).toFixed(1);
+        }
+    });
+    
+    let seqWidth = sxNodes.length * 60;
+    let startX = cx - seqWidth / 2 + 30;
+    
+    // Spawn \bar{S_x} = label fading in
+    let fn = new AnimNode("S̄x =", startX - 75, 220);
+    fn.scale = 1.6;
+    fn.alpha = 0; fn.fade(255);
+    this.labels.push(fn);
+    
+    sxNodes.forEach((n, i) => {
+        n.tscale = 1.6;
+        n.move(startX + i*60, 220);
+        n.fade(255);
+    });
+}
+  
     reset() {
         this.currentStage = 0;
         this.nodes = []; this.labels = []; this.hx = []; this.omega = []; this.wmat = [];
