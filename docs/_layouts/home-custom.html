@@ -1,0 +1,71 @@
+---
+layout: default
+---
+
+<link rel="stylesheet" href="{{ '/assets/css/custom-home.css' | relative_url }}">
+
+<div class="custom-hero-section">
+  <div class="custom-hero-container">
+    <!-- Left side: Image -->
+    <div class="custom-hero-image-wrapper">
+      <img src="{{ page.header.overlay_image }}" alt="{{ page.title }}" class="custom-hero-image">
+      {% if page.header.caption %}
+        <div class="custom-hero-caption">
+          {{ page.header.caption | markdownify }}
+          {% if page.header.caption_sub %}
+            <div class="custom-hero-caption-sub">{{ page.header.caption_sub | markdownify }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Right side: Text and content -->
+    <div class="custom-hero-right">
+      <h1 class="custom-hero-title">{{ page.title }}</h1>
+
+      <div class="custom-hero-content">
+        {% if page.hero_text %}
+          <div class="custom-hero-text">
+            {{ page.hero_text | markdownify }}
+          </div>
+        {% endif %}
+
+        {% if page.header.actions %}
+          <div class="custom-hero-actions">
+            <strong>Quick actions:</strong>
+            {% for action in page.header.actions %}
+              <div class="action-item">
+                <span class="action-bullet">-</span>
+                <a href="{{ action.url }}">
+                  {{ action.label }}
+                </a>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  {% if page.author_profile %}
+    <aside class="sidebar custom-sidebar">
+      {% include author-profile.html %}
+    </aside>
+  {% endif %}
+
+  <main class="page-content">
+    <article class="page">
+      {% if page.title %}<header>{% endif %}
+      {% if page.title %}<h1 id="page-title" class="page-title">{{ page.title }}</h1>{% endif %}
+      {% if page.title %}</header>{% endif %}
+
+      <section class="page-body">
+        {{ content }}
+      </section>
+    </article>
+  </main>
+</div>
+
+<script src="{{ '/assets/js/sidebar-scroll-animation.js' | relative_url }}"></script>
