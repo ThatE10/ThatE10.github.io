@@ -1,35 +1,30 @@
 ---
-layout: single
-title: "Biography"
+layout: home-custom
+title: "ethan nguyen!"
 permalink: /
 author_profile: true
 classes: wide
+header:
+  overlay_image: /assets/images/unsplash-image-1.jpg
+  overlay_filter: rgba(255, 0, 0, 0.5)
+  caption: "Photo of Wolf Pit @ Linville Gorge"
+  caption_sub: "iPhone 14 Pro Max 77mm f2.8, 25/10/2025 @ 35° 48' 47.27\" N, 81° 54' 15.80\" W"
+  actions:
+    - label: "CV"
+      url: "https://docs.google.com/document/d/1Yg-dObFKN_EfkT3dJJqFO5eTYOaExlIg_x6iFjj0Zwg/edit"
+    - label: "Project Highlights"
+      url: "#projects"
+    - label: "Github"
+      url: "https://github.com/ThatE10"
+    - label: "Blog"
+      url: "/blog"
+    - label: "Meet with me"
+      url: "/calendar"
+hero_text: |
+  I work on understanding the shape of intelligence and the stability of representations in LLMs & ML models
 ---
 
-I **interpret** LLMs to increase **trust** and **safety** in real world systems using the underlying geometry of feature manifolds and non-convex objectives. I deeply believe there could be substantial gains in safety, reliablity, & preformance through pragmatic mechanistic interpretablity.  
-
----
-
-## About Me
-
-I'm an undergraduate mathematics and computer science double student at the University of North Carolina Charlotte with 3.5 years research experience in non-convex optimization advised under [Christian Kümmerle](https://ckuemmerle.com/home/). I am currently looking for mentorship to help refine my research taste and execution. I used to lead Charlotte AI Research, a student organization that creates an environment for student growth and exploration.
-
-My work spans across:
-- Mechanistic Interpretablity on Large Language models
-- Mechanistic Transfer
-- AI Safety
-- Scalable optimization methods
-- Community-centered AI education (Hobby)
-
-### Erdős Number
-My Erdős number is **4**
-
-<p style="font-size: 14px; color: #666;">Ethan Nguyen → Kümmerle, Christian → Maggioni, Mauro → Chui, Charles Kam-tai → Erdős, Paul</p>
-<p style="font-size: 13px;"><a href="https://mathscinet.ams.org/mathscinet/freetools/collab-dist?source=1299826&target=189017" target="_blank">View on MathSciNet</a></p>
-
----
-
-## Projects
+# Projects
 
 #### [[NeurIPS 2025] Quadratic Reweighted Rank Regularizer for Effective Low-Rank Training](https://arxiv.org/pdf/2511.04485)
 Official implementation of a novel rank regularization technique that improves low-rank matrix training through quadratic reweighting. The method is structured around constrained optimization objectives, achieving efficient convergence on large-scale problems. Deployed and maintained on GitHub. <a href="https://github.com/ThatE10/q3r" class="github-widget-light" target="_blank"><i class="fab fa-github"></i> Code</a>
@@ -55,33 +50,26 @@ A comprehensive system for processing large-scale email archives to extract uniq
 #### Apollo: Autonomous Meal Delivery Solution
 Leading a team of 6 to develop an experimental autonomous delivery robot for meal distribution across the UNC Charlotte campus. In collaboration with Charlotte AI Research and the Department of Computer Science, the project leverages ROS2 and TensorFlow to process continuous sensor streams and translate real-time data into navigation and delivery actions. Designed and implemented a unified Docker-based development environment that enables seamless team integration and collaborative workflows. <a href="#" class="github-widget-light" target="_blank"><i class="fab fa-github"></i> Code</a>
 
+### Erdős Number
+My Erdős number is **4**
+
+<p style="font-size: 14px; color: #666;">Ethan Nguyen → Kümmerle, Christian → Maggioni, Mauro → Chui, Charles Kam-tai → Erdős, Paul</p>
+<p style="font-size: 13px;"><a href="https://mathscinet.ams.org/mathscinet/freetools/collab-dist?source=1299826&target=189017" target="_blank">View on MathSciNet</a></p>
+
 #### [Tools & Utilities](/tools/)
 An assortment of useful tools that run entirely in your browser. No files are uploaded to any server.
 
----
+## About Me
 
-## Curriculum Vitae
+I'm an undergraduate mathematics and computer science double student at the University of North Carolina Charlotte with 3.5 years research experience in non-convex optimization advised under [Christian Kümmerle](https://ckuemmerle.com/home/). I am currently looking for mentorship to help refine my research taste and execution. I used to lead Charlotte AI Research, a student organization that creates an environment for student growth and exploration.
 
-<a href="https://drive.google.com/drive/folders/15gC66MtaS9QQAvfI-fXoOZeCVlyEwy2P?usp=drive_link" class="folder-link" target="_blank" rel="noopener noreferrer">
-    <svg class="folder-icon" viewBox="0 0 24 24" fill="none">
-        <path d="M10 4H4C2.89 4 2 4.89 2 6V18C2 19.11 2.89 20 4 20H20C21.11 20 22 19.11 22 18V8C22 6.89 21.11 6 20 6H12L10 4Z" fill="url(#folderGradient)"/>
-        <defs>
-            <linearGradient id="folderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#34a853;stop-opacity:1" />
-            </linearGradient>
-        </defs>
-    </svg>
-    <span class="folder-text">Google Drive Link</span>
-    <svg class="drive-logo" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M6.28 3L4.63 6.55L9.36 15H14.64L19.37 6.55L17.72 3H6.28ZM12 9.5L16.73 4.5L15.27 8.5L12 13.5L8.73 8.5L7.27 4.5L12 9.5Z" fill="#4285f4"/>
-        <path d="M3 17.25V17.5C3 18.88 4.12 20 5.5 20H18.5C19.88 20 21 18.88 21 17.5V17.25L16.73 8.5L12 13.5L7.27 8.5L3 17.25Z" fill="#34a853"/>
-        <path d="M12 13.5L16.73 8.5L19.37 6.55L14.64 15H9.36L4.63 6.55L7.27 8.5L12 13.5Z" fill="#fbbc05"/>
-        <path d="M12 13.5L7.27 8.5L4.63 6.55L9.36 15H14.64L19.37 6.55L16.73 8.5L12 13.5Z" fill="#ea4335"/>
-    </svg>
-</a>
+My work spans across:
+- Mechanistic Interpretablity on Large Language models
+- Mechanistic Transfer
+- AI Safety
+- Scalable optimization methods
+- Community-centered AI education (Hobby)
 
----
 
 ## Charlotte AI Research
 
