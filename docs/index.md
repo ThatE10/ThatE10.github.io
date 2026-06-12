@@ -21,7 +21,7 @@ header:
     - label: "Meet with me"
       url: "/calendar"
 hero_text: |
-  I build safe ai by understanding the shape of intelligence and the stability of representations.
+  I build safe AI, by understanding the shape of intelligence and the stability of representations.
 ---
 
 # Projects
