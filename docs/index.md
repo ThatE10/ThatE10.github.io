@@ -21,7 +21,7 @@ header:
     - label: "Meet with me"
       url: "/calendar"
 hero_text: |
-  I work on understanding the shape of intelligence and the stability of representations in LLMs & ML models
+  I build safe ai by understanding the shape of intelligence and the stability of representations.
 ---
 
 # Projects
