@@ -1,13 +1,13 @@
 {
-  "name": "Brush Timer",
+  "name": "Toothbrush timer",
   "short_name": "Brush",
-  "description": "A calm two-minute toothbrushing timer with gentle fifteen-second interval chimes. Works fully offline.",
+  "description": "A 2-minute toothbrush timer with 15-second steps and soft chimes. Works offline.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#160b0e",
-  "theme_color": "#1c0f12",
+  "background_color": "#fdf6f5",
+  "theme_color": "#fdf6f5",
   "icons": [
     {
       "src": "icon.svg",

@@ -2,287 +2,172 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Brush Timer</title>
-<meta name="description" content="A calm two-minute toothbrushing timer with gentle fifteen-second interval chimes. Works fully offline.">
-<meta name="theme-color" content="#1c0f12">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toothbrush timer</title>
+<meta name="description" content="A 2-minute toothbrush timer with 15-second steps and soft chimes. Works offline.">
+<meta name="theme-color" content="#fdf6f5">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
-  /* Everything inline — no external fonts, scripts, or stylesheets, so the
-     page renders identically with no network connection at all. */
   :root {
-    --bg-deep:   #160b0e;
-    --bg-warm:   #2a1419;
-    --surface:   rgba(255, 214, 220, 0.06);
-    --surface-2: rgba(255, 214, 220, 0.10);
-    --ring-track:#3a2026;
-    --rose:      #d4707e;
-    --rose-soft: #e8a0a8;
-    --rose-glow: rgba(212, 112, 126, 0.35);
-    --text:      #f3e2e4;
-    --text-dim:  #c9a3a8;
-    --text-faint:#9a767c;
+    --bg: #fdf6f5;
+    --text: #3b2d2f;
+    --muted: #8a7376;
+    --red: #b4555f;
+    --line: #e6d4d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #221a1b;
+      --text: #e9dddf;
+      --muted: #a08a8d;
+      --red: #d98992;
+      --line: #463638;
+    }
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body { height: 100%; }
+  * { box-sizing: border-box; }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                 "Helvetica Neue", Arial, sans-serif;
-    background: radial-gradient(120% 90% at 50% 18%, var(--bg-warm) 0%, var(--bg-deep) 70%);
+    font-family: Georgia, "Times New Roman", serif;
+    background: var(--bg);
     color: var(--text);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    min-height: 100dvh;
-    padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
-    -webkit-font-smoothing: antialiased;
+    max-width: 26rem;
+    margin: 0 auto;
+    padding: 3rem 1.25rem;
     text-align: center;
-    overflow-x: hidden;
+    line-height: 1.5;
   }
 
-  header h1 {
-    font-size: 1.15rem;
-    font-weight: 500;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--rose-soft);
-  }
-  header p {
-    margin-top: 6px;
-    font-size: 0.85rem;
-    color: var(--text-faint);
-    letter-spacing: 0.04em;
+  h1 {
+    font-size: 1.3rem;
+    font-weight: normal;
+    margin: 0 0 0.25rem;
   }
 
-  /* ---- breathing ring ---- */
-  .dial-wrap {
-    position: relative;
-    margin: 30px 0 22px;
-    width: min(74vw, 320px);
-    aspect-ratio: 1;
+  .sub {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0 0 2.5rem;
   }
 
-  .glow {
-    position: absolute;
-    inset: -14%;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--rose-glow) 0%, transparent 62%);
-    animation: breathe 9s ease-in-out infinite;
-    pointer-events: none;
-  }
-  @keyframes breathe {
-    0%, 100% { transform: scale(0.92); opacity: 0.55; }
-    50%      { transform: scale(1.06); opacity: 0.95; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .glow { animation: none; opacity: 0.7; }
-  }
-
-  svg.dial { width: 100%; height: 100%; transform: rotate(-90deg); display: block; }
-  .track    { fill: none; stroke: var(--ring-track); stroke-width: 7; }
-  .progress {
-    fill: none;
-    stroke: var(--rose);
-    stroke-width: 7;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.25s linear;
-  }
-
-  .dial-center {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-  }
   .time {
-    font-size: clamp(2.6rem, 13vw, 3.6rem);
-    font-weight: 200;
+    font-size: 4rem;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
-  }
-  .interval-label {
-    font-size: 0.78rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-faint);
+    margin: 0;
   }
 
-  /* ---- zone guidance ---- */
+  .step {
+    color: var(--muted);
+    font-size: 0.9rem;
+    min-height: 1.4em;
+    margin: 0.25rem 0 1.5rem;
+  }
+
+  .bar {
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    margin: 0 0 2rem;
+    overflow: hidden;
+  }
+  .bar div {
+    height: 100%;
+    width: 0;
+    background: var(--red);
+    transition: width 0.25s linear;
+  }
+
   .zone {
-    min-height: 58px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    justify-content: center;
+    font-size: 1.15rem;
+    min-height: 1.6em;
+    margin: 0 0 2rem;
   }
-  .zone-name { font-size: 1.12rem; font-weight: 500; color: var(--rose-soft); }
-  .zone-hint { font-size: 0.86rem; color: var(--text-dim); }
-
-  .dots {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin: 18px 0 26px;
-  }
-  .dots span {
-    width: 9px; height: 9px;
-    border-radius: 50%;
-    background: var(--ring-track);
-    transition: background 0.4s, transform 0.4s;
-  }
-  .dots span.done   { background: var(--rose); }
-  .dots span.active { background: var(--rose-soft); transform: scale(1.35); }
-
-  /* ---- controls ---- */
-  .controls { display: flex; gap: 14px; align-items: center; }
 
   button {
     font: inherit;
+    font-size: 1rem;
     color: var(--text);
-    background: var(--surface);
-    border: 1px solid rgba(232, 160, 168, 0.25);
-    border-radius: 999px;
-    padding: 12px 30px;
-    font-size: 0.95rem;
-    letter-spacing: 0.08em;
+    background: none;
+    border: 1px solid var(--muted);
+    border-radius: 4px;
+    padding: 0.5rem 1.5rem;
+    margin: 0 0.3rem;
     cursor: pointer;
-    transition: background 0.25s, border-color 0.25s;
-    -webkit-tap-highlight-color: transparent;
   }
-  button:hover, button:focus-visible { background: var(--surface-2); border-color: var(--rose-soft); outline: none; }
+  button:hover { border-color: var(--red); color: var(--red); }
 
-  button.primary {
-    background: linear-gradient(145deg, #a84d5c, #7e3440);
-    border-color: transparent;
-    min-width: 150px;
-    font-weight: 500;
+  .options {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: var(--muted);
   }
-  button.primary:hover, button.primary:focus-visible { filter: brightness(1.12); }
+  .options label { margin: 0 0.7rem; cursor: pointer; }
+  .options input { accent-color: var(--red); }
 
-  .toggles {
-    display: flex;
-    gap: 22px;
-    margin-top: 26px;
-  }
-  .toggles label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.82rem;
-    color: var(--text-dim);
-    cursor: pointer;
-    user-select: none;
-  }
-  .toggles input { accent-color: var(--rose); width: 15px; height: 15px; cursor: pointer; }
-
-  footer {
-    margin-top: 30px;
-    font-size: 0.72rem;
-    color: var(--text-faint);
-    letter-spacing: 0.04em;
-    max-width: 360px;
-    line-height: 1.5;
+  .note {
+    margin-top: 3rem;
+    font-size: 0.8rem;
+    color: var(--muted);
   }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Brush Timer</h1>
-  <p>Two gentle minutes · eight 15-second passes</p>
-</header>
+<h1>Toothbrush timer</h1>
+<p class="sub">2 minutes, in 15-second steps</p>
 
-<div class="dial-wrap">
-  <div class="glow"></div>
-  <svg class="dial" viewBox="0 0 200 200" aria-hidden="true">
-    <circle class="track"    cx="100" cy="100" r="92"></circle>
-    <circle class="progress" cx="100" cy="100" r="92" id="progressArc"></circle>
-  </svg>
-  <div class="dial-center">
-    <div class="time" id="timeDisplay">2:00</div>
-    <div class="interval-label" id="intervalLabel">ready when you are</div>
-  </div>
-</div>
+<p class="time" id="timeDisplay">2:00</p>
+<p class="step" id="stepLabel">&nbsp;</p>
 
-<div class="zone" aria-live="polite">
-  <div class="zone-name" id="zoneName">Take a slow breath</div>
-  <div class="zone-hint" id="zoneHint">Small, soft circles — let the bristles do the work</div>
-</div>
+<div class="bar"><div id="barFill"></div></div>
 
-<div class="dots" id="dots" aria-hidden="true"></div>
+<p class="zone" id="zoneName">&nbsp;</p>
 
-<div class="controls">
-  <button class="primary" id="startBtn">Begin</button>
+<p>
+  <button id="startBtn">Start</button>
   <button id="resetBtn">Reset</button>
-</div>
+</p>
 
-<div class="toggles">
-  <label><input type="checkbox" id="chimeToggle" checked> soft chimes</label>
-  <label><input type="checkbox" id="ambientToggle" checked> ocean hush</label>
-</div>
+<p class="options">
+  <label><input type="checkbox" id="chimeToggle" checked> chime</label>
+  <label><input type="checkbox" id="ambientToggle"> background noise</label>
+</p>
 
-<footer>
-  Everything runs in this page — the chimes are synthesized locally and nothing
-  is loaded from the network, so the timer keeps working with no connection at all.
-</footer>
+<p class="note">Works offline once loaded. No files, nothing sent anywhere.</p>
 
 <script>
 (function () {
   'use strict';
 
-  /* ---------- configuration ---------- */
   var INTERVAL_MS = 15000;
   var STEPS = 8;
-  var TOTAL_MS = INTERVAL_MS * STEPS; /* 2 minutes */
+  var TOTAL_MS = INTERVAL_MS * STEPS;
 
   var ZONES = [
-    { name: 'Upper right · outside', hint: 'Angle toward the gumline, gentle circles' },
-    { name: 'Upper right · inside',  hint: 'Tilt the brush, sweep away from the gums' },
-    { name: 'Upper left · outside',  hint: 'Keep the pressure light and easy' },
-    { name: 'Upper left · inside',   hint: 'Short, calm strokes — no rushing' },
-    { name: 'Lower left · outside',  hint: 'Halfway there — breathe slowly' },
-    { name: 'Lower left · inside',   hint: 'Reach the back molars unhurried' },
-    { name: 'Lower right · outside', hint: 'Soft circles along the gumline' },
-    { name: 'Lower right · inside',  hint: 'Finish with the chewing surfaces' }
+    'Upper right, outside',
+    'Upper right, inside',
+    'Upper left, outside',
+    'Upper left, inside',
+    'Lower left, outside',
+    'Lower left, inside',
+    'Lower right, outside',
+    'Lower right, inside'
   ];
 
-  /* ---------- elements ---------- */
-  var timeDisplay   = document.getElementById('timeDisplay');
-  var intervalLabel = document.getElementById('intervalLabel');
-  var zoneName      = document.getElementById('zoneName');
-  var zoneHint      = document.getElementById('zoneHint');
-  var startBtn      = document.getElementById('startBtn');
-  var resetBtn      = document.getElementById('resetBtn');
-  var chimeToggle   = document.getElementById('chimeToggle');
+  var timeDisplay = document.getElementById('timeDisplay');
+  var stepLabel   = document.getElementById('stepLabel');
+  var zoneName    = document.getElementById('zoneName');
+  var startBtn    = document.getElementById('startBtn');
+  var resetBtn    = document.getElementById('resetBtn');
+  var chimeToggle = document.getElementById('chimeToggle');
   var ambientToggle = document.getElementById('ambientToggle');
-  var progressArc   = document.getElementById('progressArc');
-  var dotsWrap      = document.getElementById('dots');
+  var barFill     = document.getElementById('barFill');
 
-  var CIRC = 2 * Math.PI * 92;
-  progressArc.style.strokeDasharray = String(CIRC);
-  progressArc.style.strokeDashoffset = String(CIRC);
-
-  var dots = [];
-  for (var i = 0; i < STEPS; i++) {
-    var d = document.createElement('span');
-    dotsWrap.appendChild(d);
-    dots.push(d);
-  }
-
-  /* ---------- timer state ---------- */
   var running = false;
   var finished = false;
-  var elapsedBase = 0;      /* ms accumulated before the current run segment */
-  var segmentStart = 0;     /* performance.now() when the current segment began */
+  var elapsedBase = 0;
+  var segmentStart = 0;
   var lastStep = -1;
   var rafId = null;
 
@@ -298,38 +183,18 @@
   function render() {
     var el = Math.min(elapsedNow(), TOTAL_MS);
     timeDisplay.textContent = fmt(TOTAL_MS - el);
-    progressArc.style.strokeDashoffset = String(CIRC * (1 - el / TOTAL_MS));
+    barFill.style.width = (100 * el / TOTAL_MS) + '%';
 
     var step = Math.min(Math.floor(el / INTERVAL_MS), STEPS - 1);
-    for (var i = 0; i < STEPS; i++) {
-      dots[i].className = i < step ? 'done' : (i === step && running ? 'active' : (finished ? 'done' : ''));
-    }
-
     if (running && step !== lastStep) {
       lastStep = step;
-      zoneName.textContent = ZONES[step].name;
-      zoneHint.textContent = ZONES[step].hint;
-      intervalLabel.textContent = 'pass ' + (step + 1) + ' of ' + STEPS;
-      if (step > 0) playChime(step === STEPS / 2 ? 'half' : 'step');
+      zoneName.textContent = ZONES[step];
+      stepLabel.textContent = (step + 1) + ' / ' + STEPS;
+      if (step > 0) playChime('step');
     }
 
     if (el >= TOTAL_MS && running) { complete(); return; }
     if (running) rafId = requestAnimationFrame(render);
-  }
-
-  function start() {
-    if (finished) reset();
-    ensureAudio();
-    running = true;
-    segmentStart = performance.now();
-    startBtn.textContent = 'Pause';
-    if (elapsedBase === 0) {
-      lastStep = -1;
-      playChime('start');
-    }
-    startAmbient();
-    requestWakeLock();
-    rafId = requestAnimationFrame(render);
   }
 
   function togglePause() {
@@ -338,12 +203,19 @@
       running = false;
       elapsedBase = el;
       startBtn.textContent = 'Resume';
-      intervalLabel.textContent = 'paused';
       stopAmbient();
       releaseWakeLock();
       if (rafId) cancelAnimationFrame(rafId);
     } else {
-      start();
+      if (finished) reset();
+      ensureAudio();
+      running = true;
+      segmentStart = performance.now();
+      startBtn.textContent = 'Pause';
+      if (elapsedBase === 0) lastStep = -1;
+      startAmbient();
+      requestWakeLock();
+      rafId = requestAnimationFrame(render);
     }
   }
 
@@ -352,14 +224,13 @@
     finished = true;
     elapsedBase = TOTAL_MS;
     if (rafId) cancelAnimationFrame(rafId);
-    render();
     timeDisplay.textContent = '0:00';
-    intervalLabel.textContent = 'all done';
-    zoneName.textContent = 'Lovely — rinse and smile';
-    zoneHint.textContent = 'See you in about twelve hours';
-    startBtn.textContent = 'Begin again';
+    barFill.style.width = '100%';
+    stepLabel.textContent = '';
+    zoneName.textContent = 'Done.';
+    startBtn.textContent = 'Start';
     playChime('done');
-    stopAmbient(3.5);
+    stopAmbient(3);
     releaseWakeLock();
   }
 
@@ -369,10 +240,9 @@
     elapsedBase = 0;
     lastStep = -1;
     if (rafId) cancelAnimationFrame(rafId);
-    startBtn.textContent = 'Begin';
-    intervalLabel.textContent = 'ready when you are';
-    zoneName.textContent = 'Take a slow breath';
-    zoneHint.textContent = 'Small, soft circles — let the bristles do the work';
+    startBtn.textContent = 'Start';
+    stepLabel.innerHTML = '&nbsp;';
+    zoneName.innerHTML = '&nbsp;';
     stopAmbient();
     releaseWakeLock();
     render();
@@ -381,9 +251,8 @@
   startBtn.addEventListener('click', togglePause);
   resetBtn.addEventListener('click', reset);
 
-  /* ---------- audio: everything synthesized, no files ---------- */
-  var ctx = null, master = null;
-  var ambient = null; /* { source, gain, lfo, lfoGain, filter } */
+  /* audio: synthesized in the page, no files */
+  var ctx = null, master = null, ambient = null;
 
   function ensureAudio() {
     if (!ctx) {
@@ -416,22 +285,17 @@
     ensureAudio();
     if (!ctx) return;
     var t = ctx.currentTime + 0.03;
-    if (kind === 'start') {
-      tone(392.00, t, 2.0, 0.09);          /* G4 — a soft settling note */
-      tone(587.33, t + 0.3, 2.2, 0.05);
-    } else if (kind === 'step') {
-      tone(523.25, t, 2.2, 0.11);          /* C5 with a quiet octave shimmer */
+    if (kind === 'step') {
+      tone(523.25, t, 2.2, 0.11);
       tone(1046.50, t, 1.5, 0.035);
-    } else if (kind === 'half') {
-      tone(523.25, t, 2.0, 0.10);          /* rising third marks halfway */
-      tone(659.25, t + 0.28, 2.3, 0.09);
     } else if (kind === 'done') {
-      var notes = [523.25, 659.25, 783.99, 1046.50];
-      for (var i = 0; i < notes.length; i++) tone(notes[i], t + i * 0.38, 2.8, 0.085);
+      tone(523.25, t, 2.5, 0.09);
+      tone(659.25, t + 0.35, 2.5, 0.09);
+      tone(783.99, t + 0.7, 2.8, 0.09);
     }
   }
 
-  /* gentle looping pink-noise wash, slowly swelling like far-off surf */
+  /* quiet pink noise loop for the background-noise option */
   function makePinkNoise() {
     var len = ctx.sampleRate * 4;
     var buf = ctx.createBuffer(1, len, ctx.sampleRate);
@@ -468,7 +332,6 @@
     gain.gain.setValueAtTime(0.0001, ctx.currentTime);
     gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 2.5);
 
-    /* slow swell: ±0.02 around the base level every ~14 seconds */
     var lfo = ctx.createOscillator();
     lfo.type = 'sine';
     lfo.frequency.value = 0.07;
@@ -503,13 +366,13 @@
     if (running) { ambientToggle.checked ? startAmbient() : stopAmbient(); }
   });
 
-  /* ---------- keep the screen awake while brushing ---------- */
+  /* keep the screen on while running, where supported */
   var wakeLock = null;
   function requestWakeLock() {
     if (!('wakeLock' in navigator)) return;
     navigator.wakeLock.request('screen').then(function (lock) {
       wakeLock = lock;
-    }).catch(function () { /* not critical */ });
+    }).catch(function () {});
   }
   function releaseWakeLock() {
     if (wakeLock) { wakeLock.release().catch(function () {}); wakeLock = null; }
@@ -518,10 +381,9 @@
     if (document.visibilityState === 'visible' && running) requestWakeLock();
   });
 
-  /* ---------- offline: cache this page and its assets ---------- */
   if ('serviceWorker' in navigator &&
       (location.protocol === 'https:' || location.hostname === 'localhost')) {
-    navigator.serviceWorker.register('sw.js').catch(function () { /* offline-first is best-effort */ });
+    navigator.serviceWorker.register('sw.js').catch(function () {});
   }
 
   render();

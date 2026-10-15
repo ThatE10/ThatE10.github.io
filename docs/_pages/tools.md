@@ -17,8 +17,8 @@ Collection of useful web-based tools and utilities.
 - **[Linear Sequence Completion](/tools/sequence-completion/)** - Given any 
 incomplete linear recursive sequence, with minimal observations we can recovery the sequence nearly perfectly given, optimal intialization.  
 
-### Everyday Wellbeing
-- **[Brush Timer](/tools/brush/)** - A calm two-minute toothbrushing timer with gentle fifteen-second interval chimes and soft rose-tinted visuals. Fully self-contained — once visited, it keeps working with no internet connection at all.
+### Everyday
+- **[Toothbrush Timer](/tools/brush/)** - 2-minute brushing timer with 15-second steps and soft chimes. Works offline once loaded.
 
 ### Coming Soon
 - PDF Tools
