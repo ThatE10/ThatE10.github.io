@@ -1,7 +1,7 @@
 {
-  "name": "Toothbrush timer",
+  "name": "Mouth routine",
   "short_name": "Brush",
-  "description": "A 2-minute toothbrush timer with 15-second steps and soft chimes. Works offline.",
+  "description": "A 10-minute guided mouth routine: brushing, mouthwash swish, and myofunctional exercises. Works offline.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

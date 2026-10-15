@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Toothbrush timer</title>
-<meta name="description" content="A 2-minute toothbrush timer with 15-second steps and soft chimes. Works offline.">
+<title>Mouth routine</title>
+<meta name="description" content="A 10-minute guided mouth routine: 2-minute toothbrush timer, 1-minute mouthwash swish, and a myofunctional exercise set. Works offline.">
 <meta name="theme-color" content="#fdf6f5">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -34,7 +34,7 @@
     color: var(--text);
     max-width: 26rem;
     margin: 0 auto;
-    padding: 3rem 1.25rem;
+    padding: 2.5rem 1.25rem;
     text-align: center;
     line-height: 1.5;
   }
@@ -48,27 +48,28 @@
   .sub {
     color: var(--muted);
     font-size: 0.9rem;
-    margin: 0 0 2.5rem;
+    margin: 0 0 1.8rem;
   }
 
   .time {
-    font-size: 4rem;
+    font-size: 3.6rem;
     font-variant-numeric: tabular-nums;
     margin: 0;
+    line-height: 1.1;
   }
 
-  .step {
+  .phase {
     color: var(--muted);
     font-size: 0.9rem;
     min-height: 1.4em;
-    margin: 0.25rem 0 1.5rem;
+    margin: 0.2rem 0 1rem;
   }
 
   .bar {
     height: 4px;
     background: var(--line);
     border-radius: 2px;
-    margin: 0 0 2rem;
+    margin: 0 0 0.3rem;
     overflow: hidden;
   }
   .bar div {
@@ -78,10 +79,48 @@
     transition: width 0.25s linear;
   }
 
-  .zone {
+  .total {
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin: 0 0 1.2rem;
+  }
+
+  .diagram {
+    min-height: 150px;
+    margin: 0 auto 0.8rem;
+    max-width: 240px;
+  }
+  .diagram svg { width: 100%; height: auto; display: block; }
+
+  /* diagram strokes and fills */
+  .dl { fill: none; stroke: var(--muted); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .df { fill: var(--muted); }
+  .dm { fill: var(--red); opacity: 0.22; stroke: var(--red); stroke-width: 1.5; }
+  .dh { fill: var(--red); opacity: 0.8; }
+  .da { stroke: var(--red); stroke-width: 2.5; fill: none; stroke-linecap: round; }
+  .dah { fill: var(--red); }
+  .dt { font-family: Georgia, serif; font-size: 10px; fill: var(--muted); }
+  .dtr { font-family: Georgia, serif; font-size: 11px; fill: var(--red); }
+  .darch { fill: none; stroke: var(--line); stroke-width: 10; stroke-linecap: round; }
+  .darchh { fill: none; stroke: var(--red); stroke-width: 10; stroke-linecap: round; opacity: 0.75; }
+
+  .ex-name {
     font-size: 1.15rem;
     min-height: 1.6em;
-    margin: 0 0 2rem;
+    margin: 0 0 0.35rem;
+  }
+  .ex-lines {
+    font-size: 0.88rem;
+    color: var(--text);
+    min-height: 4.2em;
+    margin: 0 0 0.3rem;
+  }
+  .ex-lines p { margin: 0 0 0.15rem; }
+  .works {
+    font-size: 0.78rem;
+    color: var(--red);
+    min-height: 1.3em;
+    margin: 0 0 1.4rem;
   }
 
   button {
@@ -91,14 +130,14 @@
     background: none;
     border: 1px solid var(--muted);
     border-radius: 4px;
-    padding: 0.5rem 1.5rem;
-    margin: 0 0.3rem;
+    padding: 0.5rem 1.3rem;
+    margin: 0 0.25rem;
     cursor: pointer;
   }
   button:hover { border-color: var(--red); color: var(--red); }
 
   .options {
-    margin-top: 2rem;
+    margin-top: 1.8rem;
     font-size: 0.9rem;
     color: var(--muted);
   }
@@ -106,26 +145,33 @@
   .options input { accent-color: var(--red); }
 
   .note {
-    margin-top: 3rem;
-    font-size: 0.8rem;
+    margin-top: 2.4rem;
+    font-size: 0.78rem;
     color: var(--muted);
+    line-height: 1.5;
   }
 </style>
 </head>
 <body>
 
-<h1>Toothbrush timer</h1>
-<p class="sub">2 minutes, in 15-second steps</p>
+<h1>Mouth routine</h1>
+<p class="sub">10 minutes: brush &middot; rinse &middot; 13 mouth exercises</p>
 
 <p class="time" id="timeDisplay">2:00</p>
-<p class="step" id="stepLabel">&nbsp;</p>
+<p class="phase" id="phaseLabel">&nbsp;</p>
 
 <div class="bar"><div id="barFill"></div></div>
+<p class="total" id="totalLabel">10:00 total</p>
 
-<p class="zone" id="zoneName">&nbsp;</p>
+<div class="diagram" id="diagram"></div>
+
+<p class="ex-name" id="exName">&nbsp;</p>
+<div class="ex-lines" id="exLines"></div>
+<p class="works" id="worksLabel">&nbsp;</p>
 
 <p>
   <button id="startBtn">Start</button>
+  <button id="skipBtn">Skip</button>
   <button id="resetBtn">Reset</button>
 </p>
 
@@ -134,41 +180,329 @@
   <label><input type="checkbox" id="ambientToggle"> background noise</label>
 </p>
 
-<p class="note">Works offline once loaded. No files, nothing sent anywhere.</p>
+<p class="note">
+  Works offline once loaded. No files, nothing sent anywhere.<br>
+  Exercises adapted from Singapore General Hospital&rsquo;s myofunctional
+  therapy programme for strengthening the tongue, lips, cheeks and throat.
+</p>
 
 <script>
 (function () {
   'use strict';
 
-  var INTERVAL_MS = 15000;
-  var STEPS = 8;
-  var TOTAL_MS = INTERVAL_MS * STEPS;
+  /* ---------- diagram helpers (all vector, drawn in-page) ---------- */
 
-  var ZONES = [
-    'Upper right, outside',
-    'Upper right, inside',
-    'Upper left, outside',
-    'Upper left, inside',
-    'Lower left, outside',
-    'Lower left, inside',
-    'Lower right, outside',
-    'Lower right, inside'
+  function svgWrap(inner) {
+    return '<svg viewBox="0 0 220 170" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + inner + '</svg>';
+  }
+
+  function arrow(x1, y1, x2, y2) {
+    var a = Math.atan2(y2 - y1, x2 - x1), h = 7;
+    var bx = x2 - h * 0.6 * Math.cos(a), by = y2 - h * 0.6 * Math.sin(a);
+    var p1x = x2 - h * Math.cos(a - 0.45), p1y = y2 - h * Math.sin(a - 0.45);
+    var p2x = x2 - h * Math.cos(a + 0.45), p2y = y2 - h * Math.sin(a + 0.45);
+    return '<line class="da" x1="' + x1 + '" y1="' + y1 + '" x2="' + bx + '" y2="' + by + '"/>' +
+           '<polygon class="dah" points="' + x2 + ',' + y2 + ' ' + p1x + ',' + p1y + ' ' + p2x + ',' + p2y + '"/>';
+  }
+
+  /* side cross-section of the mouth, facing left */
+  var SIDE =
+    '<path class="dl" d="M44,70 L32,84 L44,87"/>' +                        /* nose */
+    '<path class="dl" d="M38,88 Q30,94 36,100"/>' +                        /* upper lip */
+    '<path class="dl" d="M36,118 Q28,126 38,132"/>' +                      /* lower lip */
+    '<rect class="dl" x="40" y="92" width="8" height="12" rx="2"/>' +      /* upper teeth */
+    '<rect class="dl" x="42" y="114" width="8" height="12" rx="2"/>' +     /* lower teeth */
+    '<path class="dl" d="M44,92 Q46,56 86,44 Q128,34 156,48"/>' +          /* hard palate */
+    '<path class="dl" d="M156,48 Q172,54 168,72 Q166,80 160,84"/>' +       /* soft palate */
+    '<path class="dl" d="M184,54 Q186,104 174,152"/>' +                    /* throat wall */
+    '<path class="dl" d="M46,128 Q60,148 104,152 Q142,154 166,146"/>' +    /* floor of mouth */
+    '<text class="dt" x="16" y="166">lips</text>' +
+    '<text class="dt" x="172" y="166">throat</text>';
+
+  function sideDiag(tonguePath, extras) {
+    return svgWrap(SIDE + '<path class="dm" d="' + tonguePath + '"/>' + (extras || ''));
+  }
+
+  /* front view of the face, as seen in a mirror */
+  var FACE =
+    '<ellipse class="dl" cx="110" cy="86" rx="58" ry="68"/>' +
+    '<circle class="df" cx="88" cy="64" r="3"/>' +
+    '<circle class="df" cx="132" cy="64" r="3"/>' +
+    '<path class="dl" d="M110,74 Q106,86 110,92"/>';
+
+  function faceDiag(mouth, extras) {
+    return svgWrap(FACE + mouth + (extras || ''));
+  }
+
+  var MOUTH_CLOSED  = '<path class="dl" d="M92,118 Q110,126 128,118"/>';
+  var MOUTH_OPEN    = '<ellipse class="dl" cx="110" cy="122" rx="13" ry="9"/>';
+
+  /* brushing: the two dental arches in mirror view, one quadrant lit */
+  function brushDiag(quadrant, inside) {
+    /* quadrant: 0 upper-right, 1 upper-left, 2 lower-left, 3 lower-right (mirror view: R on the right) */
+    var halves = [
+      'M110,58 Q138,58 160,80',   /* upper right */
+      'M60,80 Q82,58 110,58',     /* upper left */
+      'M60,104 Q82,126 110,126',  /* lower left */
+      'M110,126 Q138,126 160,104' /* lower right */
+    ];
+    var arrows = [
+      [inside ? arrow(136, 66, 128, 78) : arrow(136, 52, 144, 40),
+       inside ? arrow(84, 66, 92, 78)  : arrow(84, 52, 76, 40),
+       inside ? arrow(84, 118, 92, 106) : arrow(84, 132, 76, 144),
+       inside ? arrow(136, 118, 128, 106) : arrow(136, 132, 144, 144)][quadrant]
+    ];
+    return svgWrap(
+      '<path class="darch" d="M60,80 Q110,36 160,80"/>' +
+      '<path class="darch" d="M60,104 Q110,148 160,104"/>' +
+      '<path class="darchh" d="' + halves[quadrant] + '"/>' +
+      arrows[0] +
+      '<text class="dt" x="44" y="96">L</text>' +
+      '<text class="dt" x="168" y="96">R</text>' +
+      '<text class="dt" x="110" y="166" text-anchor="middle">mirror view</text>'
+    );
+  }
+
+  /* ---------- segment data ---------- */
+
+  var BRUSH_ZONES = [
+    { name: 'Upper right, outside', q: 0, inside: false },
+    { name: 'Upper right, inside',  q: 0, inside: true  },
+    { name: 'Upper left, outside',  q: 1, inside: false },
+    { name: 'Upper left, inside',   q: 1, inside: true  },
+    { name: 'Lower left, outside',  q: 2, inside: false },
+    { name: 'Lower left, inside',   q: 2, inside: true  },
+    { name: 'Lower right, outside', q: 3, inside: false },
+    { name: 'Lower right, inside',  q: 3, inside: true  }
   ];
 
+  var EXERCISES = [
+    {
+      name: 'Tongue Pop', dur: 30, works: 'works: tongue & palate',
+      lines: ['Smile. Suction the tongue tip to the roof just behind the front teeth, then pop it off.',
+              'Keep the jaw still — a finger on the chin helps. 10–15 pops.'],
+      diag: function () {
+        return sideDiag(
+          'M58,70 Q88,62 112,80 Q142,100 156,140 Q110,152 66,146 Q54,140 54,118 Q52,90 58,70 Z',
+          '<ellipse class="dh" cx="62" cy="74" rx="9" ry="6"/>' + arrow(68, 88, 76, 106)
+        );
+      }
+    },
+    {
+      name: 'Tongue Drag & Swallow', dur: 30, works: 'works: tongue & throat muscles',
+      lines: ['Mouth open, press the tongue tip to the roof and hold 3 s.',
+              'Drag it back along the palate to a count of 5, then swallow. 5 times.'],
+      diag: function () {
+        return sideDiag(
+          'M50,90 Q60,62 96,52 Q122,46 136,58 Q152,84 158,140 Q110,152 64,146 Q48,136 50,90 Z',
+          '<path class="dh" d="M54,86 Q58,60 94,49 Q120,43 138,54 L134,62 Q118,52 96,57 Q62,68 60,88 Z"/>' +
+          arrow(78, 36, 148, 40)
+        );
+      }
+    },
+    {
+      name: 'Tongue Force', dur: 30, works: 'works: soft palate & tongue',
+      lines: ['Mouth open, tongue tip on the roof.',
+              'Lift the middle of the tongue up to the roof and hold 5 s. 5 times.'],
+      diag: function () {
+        return sideDiag(
+          'M50,88 Q68,82 84,64 Q98,46 114,54 Q132,66 142,92 Q152,112 156,140 Q110,152 66,146 Q50,140 50,88 Z',
+          '<ellipse class="dh" cx="102" cy="52" rx="14" ry="7"/>' + arrow(102, 80, 102, 58)
+        );
+      }
+    },
+    {
+      name: 'Tongue Stretch', dur: 30, works: 'works: whole tongue',
+      lines: ['Stick the tongue out as far as it goes.',
+              'Reach for the chin while looking up at the ceiling. Hold 10 s, repeat.'],
+      diag: function () {
+        return sideDiag(
+          'M20,126 Q26,108 46,106 Q92,98 130,112 Q152,122 158,142 Q110,152 62,148 Q40,146 20,126 Z',
+          '<ellipse class="dh" cx="26" cy="122" rx="9" ry="6"/>' + arrow(24, 134, 16, 152)
+        );
+      }
+    },
+    {
+      name: 'Tongue Drop & Hold', dur: 30, works: 'works: throat & tongue',
+      lines: ['Mouth open, tongue tip resting behind the lower front teeth.',
+              'Pull the back of the tongue down and hold 3 s. 5 times.'],
+      diag: function () {
+        return sideDiag(
+          'M50,114 Q72,110 98,116 Q126,122 142,132 Q152,138 156,146 Q110,154 66,150 Q48,142 50,114 Z',
+          '<ellipse class="dh" cx="138" cy="130" rx="12" ry="7"/>' + arrow(140, 104, 140, 124)
+        );
+      }
+    },
+    {
+      name: 'Ka Swallow', dur: 30, works: 'works: throat & back of tongue',
+      lines: ['Rest two knuckles between the front teeth.',
+              'Say “ka ka ka” out loud, then swallow. 5 rounds.',
+              'Too hard? Use one finger and sip some water first.'],
+      diag: function () {
+        return sideDiag(
+          'M50,126 Q80,120 104,108 Q130,94 140,68 Q148,82 156,140 Q110,152 64,148 Q48,140 50,126 Z',
+          '<ellipse class="dh" cx="140" cy="68" rx="11" ry="8"/>' +
+          '<text class="dtr" x="150" y="32">“ka”</text>' + arrow(148, 40, 144, 56)
+        );
+      }
+    },
+    {
+      name: 'Cheek Stretch', dur: 30, works: 'works: cheek (buccinator) & lips',
+      lines: ['Index finger inside the cheek, press outwards.',
+              'Squeeze the cheek back in against the finger at the same time. 10 each side.'],
+      diag: function () {
+        return faceDiag(MOUTH_CLOSED,
+          '<circle class="dm" cx="144" cy="102" r="15"/>' +
+          arrow(132, 102, 152, 102) + arrow(174, 102, 162, 102)
+        );
+      }
+    },
+    {
+      name: 'Jaw Breaker', dur: 30, works: 'works: tongue & cheek',
+      lines: ['Push the tongue tip hard into the left cheek and hold 3 s.',
+              'Same on the right. 5 each side.'],
+      diag: function () {
+        return faceDiag(MOUTH_CLOSED,
+          '<circle class="dm" cx="76" cy="102" r="15"/>' +
+          '<ellipse class="dh" cx="72" cy="102" rx="6" ry="8"/>' +
+          arrow(104, 114, 80, 104)
+        );
+      }
+    },
+    {
+      name: 'Air Puff', dur: 30, works: 'works: facial & palate muscles',
+      lines: ['Blow air into the left cheek, hold 3 s.',
+              'Then the upper lip, right cheek, lower lip. 5 rounds.'],
+      diag: function () {
+        return faceDiag(MOUTH_CLOSED,
+          '<circle class="dm" cx="76" cy="102" r="14"/>' +
+          '<circle class="dm" cx="144" cy="102" r="14"/>' +
+          '<ellipse class="dm" cx="110" cy="106" rx="12" ry="6"/>' +
+          '<ellipse class="dm" cx="110" cy="132" rx="12" ry="6"/>' +
+          '<text class="dtr" x="72" y="106" text-anchor="middle">1</text>' +
+          '<text class="dtr" x="110" y="109" text-anchor="middle">2</text>' +
+          '<text class="dtr" x="148" y="106" text-anchor="middle">3</text>' +
+          '<text class="dtr" x="110" y="136" text-anchor="middle">4</text>'
+        );
+      }
+    },
+    {
+      name: 'Mouth Chewing', dur: 30, works: 'works: jaw (masseter) & throat',
+      lines: ['Lips closed, chew as if on a piece of gum.',
+              'Hum “mmm” while chewing.'],
+      diag: function () {
+        return faceDiag(MOUTH_CLOSED,
+          '<ellipse class="dm" cx="80" cy="128" rx="13" ry="10"/>' +
+          '<ellipse class="dm" cx="140" cy="128" rx="13" ry="10"/>' +
+          arrow(62, 120, 62, 136) + arrow(158, 136, 158, 120) +
+          '<text class="dtr" x="110" y="150" text-anchor="middle">“mmm”</text>'
+        );
+      }
+    },
+    {
+      name: 'Lip Seal', dur: 30, works: 'works: lips (orbicularis oris)',
+      lines: ['Rest the lips gently together, teeth apart, jaw loose.',
+              'Breathe only through the nose.'],
+      diag: function () {
+        return faceDiag(
+          '<path class="dl" d="M92,118 Q110,126 128,118"/>',
+          '<path class="dh" d="M92,116 Q110,124 128,116 Q110,130 92,116 Z"/>' +
+          arrow(118, 56, 112, 72) +
+          '<text class="dtr" x="130" y="52">nose</text>'
+        );
+      }
+    },
+    {
+      name: 'Lip Press & Hold', dur: 30, works: 'works: lips (orbicularis oris)',
+      lines: ['Press the lips firmly together, hold 5 s, relax. Repeat.',
+              'Press with the lips, not the jaw — keep teeth apart.'],
+      diag: function () {
+        return faceDiag(
+          '',
+          '<path class="dh" d="M90,117 Q110,125 130,117 Q110,131 90,117 Z"/>' +
+          arrow(110, 98, 110, 112) + arrow(110, 144, 110, 130)
+        );
+      }
+    },
+    {
+      name: 'Mewing', dur: 60, works: 'works: whole tongue & palate — resting posture',
+      lines: ['Rest the whole tongue flat on the roof of the mouth, back third included.',
+              'Tip just behind the top front teeth. Lips closed, teeth barely touching.',
+              'Light pressure only. Breathe through the nose.'],
+      diag: function () {
+        return sideDiag(
+          'M48,94 Q50,60 88,48 Q126,38 152,52 Q164,60 160,80 Q158,120 156,140 Q110,152 64,146 Q48,136 48,94 Z',
+          '<path class="dh" d="M50,90 Q52,58 88,46 Q126,36 154,50 L150,58 Q124,46 92,54 Q58,66 56,92 Z"/>'
+        );
+      }
+    }
+  ];
+
+  var SWISH = {
+    name: 'Mouthwash swish', dur: 60, works: 'reaches where the brush doesn’t',
+    lines: ['A capful of mouthwash. Swish it through the whole mouth —',
+            'cheeks, front teeth, both sides. Keep it moving the full minute, then spit.'],
+    diag: function () {
+      return faceDiag(MOUTH_CLOSED,
+        '<circle class="dm" cx="76" cy="102" r="14"/>' +
+        '<circle class="dm" cx="144" cy="102" r="14"/>' +
+        '<path class="da" d="M84,128 Q110,140 136,128"/>' +
+        arrow(132, 130, 140, 124)
+      );
+    }
+  };
+
+  /* assemble the full session: 2:00 brush + 1:00 swish + 7:00 exercises = 10:00 */
+  var SEG = [];
+  var i;
+  for (i = 0; i < BRUSH_ZONES.length; i++) {
+    SEG.push({
+      phase: 'Brushing · ' + (i + 1) + ' / ' + BRUSH_ZONES.length,
+      name: BRUSH_ZONES[i].name,
+      dur: 15, lines: [], works: '',
+      diag: (function (z) { return function () { return brushDiag(z.q, z.inside); }; })(BRUSH_ZONES[i]),
+      chime: i === 0 ? 'none' : 'step'
+    });
+  }
+  SEG.push({
+    phase: 'Rinse', name: SWISH.name, dur: SWISH.dur,
+    lines: SWISH.lines, works: SWISH.works, diag: SWISH.diag, chime: 'half'
+  });
+  for (i = 0; i < EXERCISES.length; i++) {
+    SEG.push({
+      phase: 'Exercise ' + (i + 1) + ' / ' + EXERCISES.length,
+      name: EXERCISES[i].name, dur: EXERCISES[i].dur,
+      lines: EXERCISES[i].lines, works: EXERCISES[i].works,
+      diag: EXERCISES[i].diag,
+      chime: i === 0 ? 'half' : 'step'
+    });
+  }
+
+  var CUM = [0];
+  for (i = 0; i < SEG.length; i++) CUM.push(CUM[i] + SEG[i].dur * 1000);
+  var TOTAL_MS = CUM[CUM.length - 1];
+
+  /* ---------- elements ---------- */
   var timeDisplay = document.getElementById('timeDisplay');
-  var stepLabel   = document.getElementById('stepLabel');
-  var zoneName    = document.getElementById('zoneName');
+  var phaseLabel  = document.getElementById('phaseLabel');
+  var totalLabel  = document.getElementById('totalLabel');
+  var exName      = document.getElementById('exName');
+  var exLines     = document.getElementById('exLines');
+  var worksLabel  = document.getElementById('worksLabel');
+  var diagramEl   = document.getElementById('diagram');
   var startBtn    = document.getElementById('startBtn');
+  var skipBtn     = document.getElementById('skipBtn');
   var resetBtn    = document.getElementById('resetBtn');
   var chimeToggle = document.getElementById('chimeToggle');
   var ambientToggle = document.getElementById('ambientToggle');
   var barFill     = document.getElementById('barFill');
 
+  /* ---------- timer state ---------- */
   var running = false;
   var finished = false;
   var elapsedBase = 0;
   var segmentStart = 0;
-  var lastStep = -1;
+  var lastSeg = -1;
   var rafId = null;
 
   function elapsedNow() {
@@ -180,17 +514,35 @@
     return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
   }
 
+  function segIndex(el) {
+    var k = 0;
+    while (k < SEG.length - 1 && el >= CUM[k + 1]) k++;
+    return k;
+  }
+
+  function showSegment(k) {
+    var s = SEG[k];
+    phaseLabel.textContent = s.phase;
+    exName.textContent = s.name;
+    var html = '';
+    for (var j = 0; j < s.lines.length; j++) html += '<p>' + s.lines[j] + '</p>';
+    exLines.innerHTML = html;
+    worksLabel.textContent = s.works;
+    diagramEl.innerHTML = s.diag ? s.diag() : '';
+  }
+
   function render() {
     var el = Math.min(elapsedNow(), TOTAL_MS);
-    timeDisplay.textContent = fmt(TOTAL_MS - el);
     barFill.style.width = (100 * el / TOTAL_MS) + '%';
+    totalLabel.textContent = fmt(TOTAL_MS - el) + ' total';
 
-    var step = Math.min(Math.floor(el / INTERVAL_MS), STEPS - 1);
-    if (running && step !== lastStep) {
-      lastStep = step;
-      zoneName.textContent = ZONES[step];
-      stepLabel.textContent = (step + 1) + ' / ' + STEPS;
-      if (step > 0) playChime('step');
+    var k = segIndex(el);
+    timeDisplay.textContent = fmt(CUM[k + 1] - el);
+
+    if (running && k !== lastSeg) {
+      lastSeg = k;
+      showSegment(k);
+      if (SEG[k].chime !== 'none') playChime(SEG[k].chime);
     }
 
     if (el >= TOTAL_MS && running) { complete(); return; }
@@ -203,6 +555,7 @@
       running = false;
       elapsedBase = el;
       startBtn.textContent = 'Resume';
+      phaseLabel.textContent = 'paused';
       stopAmbient();
       releaseWakeLock();
       if (rafId) cancelAnimationFrame(rafId);
@@ -212,11 +565,30 @@
       running = true;
       segmentStart = performance.now();
       startBtn.textContent = 'Pause';
-      if (elapsedBase === 0) lastStep = -1;
+      if (elapsedBase === 0) lastSeg = -1; else phaseLabel.textContent = SEG[segIndex(elapsedBase)].phase;
       startAmbient();
       requestWakeLock();
       rafId = requestAnimationFrame(render);
     }
+  }
+
+  function skip() {
+    if (finished) return;
+    var el = elapsedNow();
+    var k = segIndex(el);
+    if (k >= SEG.length - 1) {
+      elapsedBase = TOTAL_MS;
+      if (running) { complete(); } else { render(); }
+      return;
+    }
+    elapsedBase = CUM[k + 1];
+    if (running) {
+      segmentStart = performance.now();
+    } else {
+      lastSeg = k + 1;
+      showSegment(k + 1);
+    }
+    render();
   }
 
   function complete() {
@@ -224,10 +596,14 @@
     finished = true;
     elapsedBase = TOTAL_MS;
     if (rafId) cancelAnimationFrame(rafId);
-    timeDisplay.textContent = '0:00';
     barFill.style.width = '100%';
-    stepLabel.textContent = '';
-    zoneName.textContent = 'Done.';
+    timeDisplay.textContent = '0:00';
+    totalLabel.textContent = '0:00 total';
+    phaseLabel.textContent = '';
+    exName.textContent = 'Done.';
+    exLines.innerHTML = '';
+    worksLabel.textContent = '';
+    diagramEl.innerHTML = '';
     startBtn.textContent = 'Start';
     playChime('done');
     stopAmbient(3);
@@ -238,20 +614,25 @@
     running = false;
     finished = false;
     elapsedBase = 0;
-    lastStep = -1;
+    lastSeg = -1;
     if (rafId) cancelAnimationFrame(rafId);
     startBtn.textContent = 'Start';
-    stepLabel.innerHTML = '&nbsp;';
-    zoneName.innerHTML = '&nbsp;';
+    phaseLabel.innerHTML = '&nbsp;';
+    exName.innerHTML = '&nbsp;';
+    exLines.innerHTML = '';
+    worksLabel.innerHTML = '&nbsp;';
+    diagramEl.innerHTML = '';
     stopAmbient();
     releaseWakeLock();
     render();
+    timeDisplay.textContent = fmt(SEG[0].dur * 1000);
   }
 
   startBtn.addEventListener('click', togglePause);
+  skipBtn.addEventListener('click', skip);
   resetBtn.addEventListener('click', reset);
 
-  /* audio: synthesized in the page, no files */
+  /* ---------- audio: synthesized in the page, no files ---------- */
   var ctx = null, master = null, ambient = null;
 
   function ensureAudio() {
@@ -288,6 +669,9 @@
     if (kind === 'step') {
       tone(523.25, t, 2.2, 0.11);
       tone(1046.50, t, 1.5, 0.035);
+    } else if (kind === 'half') {
+      tone(523.25, t, 2.0, 0.10);
+      tone(659.25, t + 0.28, 2.3, 0.09);
     } else if (kind === 'done') {
       tone(523.25, t, 2.5, 0.09);
       tone(659.25, t + 0.35, 2.5, 0.09);
@@ -301,7 +685,7 @@
     var buf = ctx.createBuffer(1, len, ctx.sampleRate);
     var data = buf.getChannelData(0);
     var b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
-    for (var i = 0; i < len; i++) {
+    for (var n = 0; n < len; n++) {
       var white = Math.random() * 2 - 1;
       b0 = 0.99886 * b0 + white * 0.0555179;
       b1 = 0.99332 * b1 + white * 0.0750759;
@@ -309,7 +693,7 @@
       b3 = 0.86650 * b3 + white * 0.3104856;
       b4 = 0.55000 * b4 + white * 0.5329522;
       b5 = -0.7616 * b5 - white * 0.0168980;
-      data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+      data[n] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
       b6 = white * 0.115926;
     }
     return buf;
@@ -386,7 +770,7 @@
     navigator.serviceWorker.register('sw.js').catch(function () {});
   }
 
-  render();
+  reset();
 })();
 </script>
 </body>

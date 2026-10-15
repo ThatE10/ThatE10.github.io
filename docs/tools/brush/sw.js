@@ -2,7 +2,7 @@
    served from the cache first, so the page works with no connection at all. */
 'use strict';
 
-const CACHE = 'brush-timer-v2';
+const CACHE = 'brush-timer-v3';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (event) => {
