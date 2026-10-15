@@ -136,6 +136,9 @@
   }
   button:hover { border-color: var(--red); color: var(--red); }
 
+  #skipBtn { border-color: var(--red); color: var(--red); }
+  #skipBtn:hover { background: var(--red); color: var(--bg); }
+
   .options {
     margin-top: 1.8rem;
     font-size: 0.9rem;
@@ -236,6 +239,33 @@
 
   var MOUTH_CLOSED  = '<path class="dl" d="M92,118 Q110,126 128,118"/>';
   var MOUTH_OPEN    = '<ellipse class="dl" cx="110" cy="122" rx="13" ry="9"/>';
+
+  /* phase icons for the pause screens between sections */
+  function iconBrush() {
+    return svgWrap(
+      '<rect class="dl" x="42" y="88" width="76" height="13" rx="6"/>' +
+      '<rect class="dm" x="116" y="86" width="50" height="17" rx="6"/>' +
+      '<line class="da" x1="122" y1="82" x2="122" y2="66"/>' +
+      '<line class="da" x1="132" y1="82" x2="132" y2="66"/>' +
+      '<line class="da" x1="142" y1="82" x2="142" y2="66"/>' +
+      '<line class="da" x1="152" y1="82" x2="152" y2="66"/>' +
+      '<line class="da" x1="161" y1="82" x2="161" y2="66"/>'
+    );
+  }
+  function iconRinse() {
+    return svgWrap(
+      '<rect class="dl" x="88" y="50" width="44" height="82" rx="10"/>' +
+      '<rect class="dl" x="99" y="32" width="22" height="18" rx="4"/>' +
+      '<path class="dm" d="M90,86 L130,86 L130,122 Q130,130 122,130 L98,130 Q90,130 90,122 Z"/>' +
+      '<path class="da" d="M97,70 Q110,63 123,70"/>'
+    );
+  }
+  function iconMouth() {
+    return svgWrap(
+      '<path class="dm" d="M58,84 Q84,58 110,76 Q136,58 162,84 Q136,122 110,116 Q84,122 58,84 Z"/>' +
+      '<path class="dl" d="M66,86 Q110,98 154,86"/>'
+    );
+  }
 
   /* brushing: the two dental arches in mirror view, one quadrant lit */
   function brushDiag(quadrant, inside) {
@@ -440,8 +470,8 @@
 
   var SWISH = {
     name: 'Mouthwash swish', dur: 60, works: 'reaches where the brush doesn’t',
-    lines: ['A capful of mouthwash. Swish it through the whole mouth —',
-            'cheeks, front teeth, both sides. Keep it moving the full minute, then spit.'],
+    lines: ['A capful of mouthwash (Listerine or similar). Swish it through the whole',
+            'mouth — cheeks, front teeth, both sides. Keep it moving the full minute, then spit.'],
     diag: function () {
       return faceDiag(MOUTH_CLOSED,
         '<circle class="dm" cx="76" cy="102" r="14"/>' +
@@ -478,6 +508,11 @@
     });
   }
 
+  /* pause screens: each phase waits for its own Start press */
+  SEG[0].gate = { title: 'Brushing', sub: '2 minutes · 8 zones', icon: iconBrush() };
+  SEG[BRUSH_ZONES.length].gate = { title: 'Mouthwash swish', sub: '1 minute · Listerine or similar', icon: iconRinse() };
+  SEG[BRUSH_ZONES.length + 1].gate = { title: 'Mouth exercises', sub: '13 exercises · 7 minutes', icon: iconMouth() };
+
   var CUM = [0];
   for (i = 0; i < SEG.length; i++) CUM.push(CUM[i] + SEG[i].dur * 1000);
   var TOTAL_MS = CUM[CUM.length - 1];
@@ -504,6 +539,7 @@
   var segmentStart = 0;
   var lastSeg = -1;
   var rafId = null;
+  var gateConsumed = {};
 
   function elapsedNow() {
     return running ? elapsedBase + (performance.now() - segmentStart) : elapsedBase;
@@ -518,6 +554,23 @@
     var k = 0;
     while (k < SEG.length - 1 && el >= CUM[k + 1]) k++;
     return k;
+  }
+
+  function phaseEnd(k) {
+    var e = k + 1;
+    while (e < SEG.length && !SEG[e].gate) e++;
+    return CUM[e];
+  }
+
+  function showGate(k) {
+    var g = SEG[k].gate;
+    timeDisplay.textContent = fmt(phaseEnd(k) - CUM[k]);
+    phaseLabel.textContent = 'ready';
+    exName.textContent = g.title;
+    exLines.innerHTML = '<p>' + g.sub + '</p>';
+    worksLabel.innerHTML = '&nbsp;';
+    diagramEl.innerHTML = g.icon;
+    startBtn.textContent = 'Start';
   }
 
   function showSegment(k) {
@@ -540,6 +593,20 @@
     timeDisplay.textContent = fmt(CUM[k + 1] - el);
 
     if (running && k !== lastSeg) {
+      if (SEG[k].gate && !gateConsumed[k]) {
+        /* phase boundary: stop the clock and wait for the next Start press */
+        gateConsumed[k] = true;
+        running = false;
+        elapsedBase = CUM[k];
+        if (rafId) cancelAnimationFrame(rafId);
+        stopAmbient();
+        releaseWakeLock();
+        barFill.style.width = (100 * CUM[k] / TOTAL_MS) + '%';
+        totalLabel.textContent = fmt(TOTAL_MS - CUM[k]) + ' total';
+        playChime('half');
+        showGate(k);
+        return;
+      }
       lastSeg = k;
       showSegment(k);
       if (SEG[k].chime !== 'none') playChime(SEG[k].chime);
@@ -565,7 +632,13 @@
       running = true;
       segmentStart = performance.now();
       startBtn.textContent = 'Pause';
-      if (elapsedBase === 0) lastSeg = -1; else phaseLabel.textContent = SEG[segIndex(elapsedBase)].phase;
+      var k0 = segIndex(elapsedBase);
+      if (SEG[k0].gate && elapsedBase === CUM[k0]) {
+        gateConsumed[k0] = true;
+        lastSeg = -1;
+      } else {
+        phaseLabel.textContent = SEG[k0].phase;
+      }
       startAmbient();
       requestWakeLock();
       rafId = requestAnimationFrame(render);
@@ -584,6 +657,12 @@
     elapsedBase = CUM[k + 1];
     if (running) {
       segmentStart = performance.now();
+    } else if (SEG[k + 1].gate && !gateConsumed[k + 1]) {
+      lastSeg = k;
+      showGate(k + 1);
+      barFill.style.width = (100 * CUM[k + 1] / TOTAL_MS) + '%';
+      totalLabel.textContent = fmt(TOTAL_MS - CUM[k + 1]) + ' total';
+      return;
     } else {
       lastSeg = k + 1;
       showSegment(k + 1);
@@ -615,17 +694,12 @@
     finished = false;
     elapsedBase = 0;
     lastSeg = -1;
+    gateConsumed = {};
     if (rafId) cancelAnimationFrame(rafId);
-    startBtn.textContent = 'Start';
-    phaseLabel.innerHTML = '&nbsp;';
-    exName.innerHTML = '&nbsp;';
-    exLines.innerHTML = '';
-    worksLabel.innerHTML = '&nbsp;';
-    diagramEl.innerHTML = '';
     stopAmbient();
     releaseWakeLock();
     render();
-    timeDisplay.textContent = fmt(SEG[0].dur * 1000);
+    showGate(0);
   }
 
   startBtn.addEventListener('click', togglePause);
