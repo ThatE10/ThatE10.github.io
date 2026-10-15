@@ -1,0 +1,19 @@
+{
+  "name": "Mouth routine",
+  "short_name": "Brush",
+  "description": "A 10-minute guided mouth routine: brushing, mouthwash swish, and myofunctional exercises. Works offline.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fdf6f5",
+  "theme_color": "#fdf6f5",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
