@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brush Timer</title>
+<meta name="description" content="A calm two-minute toothbrushing timer with gentle fifteen-second interval chimes. Works fully offline.">
+<meta name="theme-color" content="#1c0f12">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  /* Everything inline — no external fonts, scripts, or stylesheets, so the
+     page renders identically with no network connection at all. */
+  :root {
+    --bg-deep:   #160b0e;
+    --bg-warm:   #2a1419;
+    --surface:   rgba(255, 214, 220, 0.06);
+    --surface-2: rgba(255, 214, 220, 0.10);
+    --ring-track:#3a2026;
+    --rose:      #d4707e;
+    --rose-soft: #e8a0a8;
+    --rose-glow: rgba(212, 112, 126, 0.35);
+    --text:      #f3e2e4;
+    --text-dim:  #c9a3a8;
+    --text-faint:#9a767c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    background: radial-gradient(120% 90% at 50% 18%, var(--bg-warm) 0%, var(--bg-deep) 70%);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+    overflow-x: hidden;
+  }
+
+  header h1 {
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--rose-soft);
+  }
+  header p {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+  }
+
+  /* ---- breathing ring ---- */
+  .dial-wrap {
+    position: relative;
+    margin: 30px 0 22px;
+    width: min(74vw, 320px);
+    aspect-ratio: 1;
+  }
+
+  .glow {
+    position: absolute;
+    inset: -14%;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--rose-glow) 0%, transparent 62%);
+    animation: breathe 9s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(0.92); opacity: 0.55; }
+    50%      { transform: scale(1.06); opacity: 0.95; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .glow { animation: none; opacity: 0.7; }
+  }
+
+  svg.dial { width: 100%; height: 100%; transform: rotate(-90deg); display: block; }
+  .track    { fill: none; stroke: var(--ring-track); stroke-width: 7; }
+  .progress {
+    fill: none;
+    stroke: var(--rose);
+    stroke-width: 7;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.25s linear;
+  }
+
+  .dial-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .time {
+    font-size: clamp(2.6rem, 13vw, 3.6rem);
+    font-weight: 200;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+  .interval-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  /* ---- zone guidance ---- */
+  .zone {
+    min-height: 58px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: center;
+  }
+  .zone-name { font-size: 1.12rem; font-weight: 500; color: var(--rose-soft); }
+  .zone-hint { font-size: 0.86rem; color: var(--text-dim); }
+
+  .dots {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 18px 0 26px;
+  }
+  .dots span {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--ring-track);
+    transition: background 0.4s, transform 0.4s;
+  }
+  .dots span.done   { background: var(--rose); }
+  .dots span.active { background: var(--rose-soft); transform: scale(1.35); }
+
+  /* ---- controls ---- */
+  .controls { display: flex; gap: 14px; align-items: center; }
+
+  button {
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid rgba(232, 160, 168, 0.25);
+    border-radius: 999px;
+    padding: 12px 30px;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.25s, border-color 0.25s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:hover, button:focus-visible { background: var(--surface-2); border-color: var(--rose-soft); outline: none; }
+
+  button.primary {
+    background: linear-gradient(145deg, #a84d5c, #7e3440);
+    border-color: transparent;
+    min-width: 150px;
+    font-weight: 500;
+  }
+  button.primary:hover, button.primary:focus-visible { filter: brightness(1.12); }
+
+  .toggles {
+    display: flex;
+    gap: 22px;
+    margin-top: 26px;
+  }
+  .toggles label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    user-select: none;
+  }
+  .toggles input { accent-color: var(--rose); width: 15px; height: 15px; cursor: pointer; }
+
+  footer {
+    margin-top: 30px;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+    max-width: 360px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Brush Timer</h1>
+  <p>Two gentle minutes · eight 15-second passes</p>
+</header>
+
+<div class="dial-wrap">
+  <div class="glow"></div>
+  <svg class="dial" viewBox="0 0 200 200" aria-hidden="true">
+    <circle class="track"    cx="100" cy="100" r="92"></circle>
+    <circle class="progress" cx="100" cy="100" r="92" id="progressArc"></circle>
+  </svg>
+  <div class="dial-center">
+    <div class="time" id="timeDisplay">2:00</div>
+    <div class="interval-label" id="intervalLabel">ready when you are</div>
+  </div>
+</div>
+
+<div class="zone" aria-live="polite">
+  <div class="zone-name" id="zoneName">Take a slow breath</div>
+  <div class="zone-hint" id="zoneHint">Small, soft circles — let the bristles do the work</div>
+</div>
+
+<div class="dots" id="dots" aria-hidden="true"></div>
+
+<div class="controls">
+  <button class="primary" id="startBtn">Begin</button>
+  <button id="resetBtn">Reset</button>
+</div>
+
+<div class="toggles">
+  <label><input type="checkbox" id="chimeToggle" checked> soft chimes</label>
+  <label><input type="checkbox" id="ambientToggle" checked> ocean hush</label>
+</div>
+
+<footer>
+  Everything runs in this page — the chimes are synthesized locally and nothing
+  is loaded from the network, so the timer keeps working with no connection at all.
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- configuration ---------- */
+  var INTERVAL_MS = 15000;
+  var STEPS = 8;
+  var TOTAL_MS = INTERVAL_MS * STEPS; /* 2 minutes */
+
+  var ZONES = [
+    { name: 'Upper right · outside', hint: 'Angle toward the gumline, gentle circles' },
+    { name: 'Upper right · inside',  hint: 'Tilt the brush, sweep away from the gums' },
+    { name: 'Upper left · outside',  hint: 'Keep the pressure light and easy' },
+    { name: 'Upper left · inside',   hint: 'Short, calm strokes — no rushing' },
+    { name: 'Lower left · outside',  hint: 'Halfway there — breathe slowly' },
+    { name: 'Lower left · inside',   hint: 'Reach the back molars unhurried' },
+    { name: 'Lower right · outside', hint: 'Soft circles along the gumline' },
+    { name: 'Lower right · inside',  hint: 'Finish with the chewing surfaces' }
+  ];
+
+  /* ---------- elements ---------- */
+  var timeDisplay   = document.getElementById('timeDisplay');
+  var intervalLabel = document.getElementById('intervalLabel');
+  var zoneName      = document.getElementById('zoneName');
+  var zoneHint      = document.getElementById('zoneHint');
+  var startBtn      = document.getElementById('startBtn');
+  var resetBtn      = document.getElementById('resetBtn');
+  var chimeToggle   = document.getElementById('chimeToggle');
+  var ambientToggle = document.getElementById('ambientToggle');
+  var progressArc   = document.getElementById('progressArc');
+  var dotsWrap      = document.getElementById('dots');
+
+  var CIRC = 2 * Math.PI * 92;
+  progressArc.style.strokeDasharray = String(CIRC);
+  progressArc.style.strokeDashoffset = String(CIRC);
+
+  var dots = [];
+  for (var i = 0; i < STEPS; i++) {
+    var d = document.createElement('span');
+    dotsWrap.appendChild(d);
+    dots.push(d);
+  }
+
+  /* ---------- timer state ---------- */
+  var running = false;
+  var finished = false;
+  var elapsedBase = 0;      /* ms accumulated before the current run segment */
+  var segmentStart = 0;     /* performance.now() when the current segment began */
+  var lastStep = -1;
+  var rafId = null;
+
+  function elapsedNow() {
+    return running ? elapsedBase + (performance.now() - segmentStart) : elapsedBase;
+  }
+
+  function fmt(ms) {
+    var s = Math.max(0, Math.ceil(ms / 1000));
+    return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  }
+
+  function render() {
+    var el = Math.min(elapsedNow(), TOTAL_MS);
+    timeDisplay.textContent = fmt(TOTAL_MS - el);
+    progressArc.style.strokeDashoffset = String(CIRC * (1 - el / TOTAL_MS));
+
+    var step = Math.min(Math.floor(el / INTERVAL_MS), STEPS - 1);
+    for (var i = 0; i < STEPS; i++) {
+      dots[i].className = i < step ? 'done' : (i === step && running ? 'active' : (finished ? 'done' : ''));
+    }
+
+    if (running && step !== lastStep) {
+      lastStep = step;
+      zoneName.textContent = ZONES[step].name;
+      zoneHint.textContent = ZONES[step].hint;
+      intervalLabel.textContent = 'pass ' + (step + 1) + ' of ' + STEPS;
+      if (step > 0) playChime(step === STEPS / 2 ? 'half' : 'step');
+    }
+
+    if (el >= TOTAL_MS && running) { complete(); return; }
+    if (running) rafId = requestAnimationFrame(render);
+  }
+
+  function start() {
+    if (finished) reset();
+    ensureAudio();
+    running = true;
+    segmentStart = performance.now();
+    startBtn.textContent = 'Pause';
+    if (elapsedBase === 0) {
+      lastStep = -1;
+      playChime('start');
+    }
+    startAmbient();
+    requestWakeLock();
+    rafId = requestAnimationFrame(render);
+  }
+
+  function togglePause() {
+    if (running) {
+      var el = elapsedNow();
+      running = false;
+      elapsedBase = el;
+      startBtn.textContent = 'Resume';
+      intervalLabel.textContent = 'paused';
+      stopAmbient();
+      releaseWakeLock();
+      if (rafId) cancelAnimationFrame(rafId);
+    } else {
+      start();
+    }
+  }
+
+  function complete() {
+    running = false;
+    finished = true;
+    elapsedBase = TOTAL_MS;
+    if (rafId) cancelAnimationFrame(rafId);
+    render();
+    timeDisplay.textContent = '0:00';
+    intervalLabel.textContent = 'all done';
+    zoneName.textContent = 'Lovely — rinse and smile';
+    zoneHint.textContent = 'See you in about twelve hours';
+    startBtn.textContent = 'Begin again';
+    playChime('done');
+    stopAmbient(3.5);
+    releaseWakeLock();
+  }
+
+  function reset() {
+    running = false;
+    finished = false;
+    elapsedBase = 0;
+    lastStep = -1;
+    if (rafId) cancelAnimationFrame(rafId);
+    startBtn.textContent = 'Begin';
+    intervalLabel.textContent = 'ready when you are';
+    zoneName.textContent = 'Take a slow breath';
+    zoneHint.textContent = 'Small, soft circles — let the bristles do the work';
+    stopAmbient();
+    releaseWakeLock();
+    render();
+  }
+
+  startBtn.addEventListener('click', togglePause);
+  resetBtn.addEventListener('click', reset);
+
+  /* ---------- audio: everything synthesized, no files ---------- */
+  var ctx = null, master = null;
+  var ambient = null; /* { source, gain, lfo, lfoGain, filter } */
+
+  function ensureAudio() {
+    if (!ctx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      ctx = new AC();
+      master = ctx.createGain();
+      master.gain.value = 0.9;
+      master.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+  }
+
+  function tone(freq, t0, dur, peak) {
+    var o = ctx.createOscillator();
+    o.type = 'sine';
+    o.frequency.value = freq;
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.linearRampToValueAtTime(peak, t0 + 0.09);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g);
+    g.connect(master);
+    o.start(t0);
+    o.stop(t0 + dur + 0.1);
+  }
+
+  function playChime(kind) {
+    if (!chimeToggle.checked) return;
+    ensureAudio();
+    if (!ctx) return;
+    var t = ctx.currentTime + 0.03;
+    if (kind === 'start') {
+      tone(392.00, t, 2.0, 0.09);          /* G4 — a soft settling note */
+      tone(587.33, t + 0.3, 2.2, 0.05);
+    } else if (kind === 'step') {
+      tone(523.25, t, 2.2, 0.11);          /* C5 with a quiet octave shimmer */
+      tone(1046.50, t, 1.5, 0.035);
+    } else if (kind === 'half') {
+      tone(523.25, t, 2.0, 0.10);          /* rising third marks halfway */
+      tone(659.25, t + 0.28, 2.3, 0.09);
+    } else if (kind === 'done') {
+      var notes = [523.25, 659.25, 783.99, 1046.50];
+      for (var i = 0; i < notes.length; i++) tone(notes[i], t + i * 0.38, 2.8, 0.085);
+    }
+  }
+
+  /* gentle looping pink-noise wash, slowly swelling like far-off surf */
+  function makePinkNoise() {
+    var len = ctx.sampleRate * 4;
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var data = buf.getChannelData(0);
+    var b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (var i = 0; i < len; i++) {
+      var white = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.96900 * b2 + white * 0.1538520;
+      b3 = 0.86650 * b3 + white * 0.3104856;
+      b4 = 0.55000 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.0168980;
+      data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+      b6 = white * 0.115926;
+    }
+    return buf;
+  }
+
+  function startAmbient() {
+    if (!ambientToggle.checked) return;
+    ensureAudio();
+    if (!ctx || ambient) return;
+    var src = ctx.createBufferSource();
+    src.buffer = makePinkNoise();
+    src.loop = true;
+
+    var filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 480;
+    filter.Q.value = 0.4;
+
+    var gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 2.5);
+
+    /* slow swell: ±0.02 around the base level every ~14 seconds */
+    var lfo = ctx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.value = 0.07;
+    var lfoGain = ctx.createGain();
+    lfoGain.gain.value = 0.02;
+    lfo.connect(lfoGain);
+    lfoGain.connect(gain.gain);
+
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(master);
+    src.start();
+    lfo.start();
+    ambient = { source: src, gain: gain, lfo: lfo };
+  }
+
+  function stopAmbient(fadeSeconds) {
+    if (!ambient || !ctx) { ambient = null; return; }
+    var fade = typeof fadeSeconds === 'number' ? fadeSeconds : 0.8;
+    var a = ambient;
+    ambient = null;
+    try {
+      a.gain.gain.cancelScheduledValues(ctx.currentTime);
+      a.gain.gain.setValueAtTime(Math.max(a.gain.gain.value, 0.0001), ctx.currentTime);
+      a.gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + fade);
+      a.source.stop(ctx.currentTime + fade + 0.1);
+      a.lfo.stop(ctx.currentTime + fade + 0.1);
+    } catch (e) { /* nodes may already be stopped */ }
+  }
+
+  ambientToggle.addEventListener('change', function () {
+    if (running) { ambientToggle.checked ? startAmbient() : stopAmbient(); }
+  });
+
+  /* ---------- keep the screen awake while brushing ---------- */
+  var wakeLock = null;
+  function requestWakeLock() {
+    if (!('wakeLock' in navigator)) return;
+    navigator.wakeLock.request('screen').then(function (lock) {
+      wakeLock = lock;
+    }).catch(function () { /* not critical */ });
+  }
+  function releaseWakeLock() {
+    if (wakeLock) { wakeLock.release().catch(function () {}); wakeLock = null; }
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && running) requestWakeLock();
+  });
+
+  /* ---------- offline: cache this page and its assets ---------- */
+  if ('serviceWorker' in navigator &&
+      (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* offline-first is best-effort */ });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
