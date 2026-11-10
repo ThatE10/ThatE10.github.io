@@ -5,8 +5,9 @@
  *                    [a link](https://example.com)[\comment, the hidden remark]
  *
  * The bracketed remark is removed from the reading flow and attached to the
- * element (or word) immediately before it. The remark appears only while the
- * reader's text selection (highlight) touches that anchor.
+ * element (or word) immediately before it. The remark appears while the
+ * pointer hovers (or keyboard focus rests on) that anchor, or while the
+ * reader's text selection (highlight) touches it.
  */
 (function () {
   var PATTERN = /\[\\comment,\s*([\s\S]*?)\]/g;
@@ -66,11 +67,21 @@
       var sel = window.getSelection();
       var active = sel && !sel.isCollapsed && sel.rangeCount > 0;
       pairs.forEach(function (pair) {
-        var show = active && sel.containsNode(pair.anchor, true);
+        var selected = active && sel.containsNode(pair.anchor, true);
+        var show = selected || pair.hovered;
         if (show) place(pair.anchor, pair.note);
         pair.note.classList.toggle("is-visible", show);
       });
     }
+
+    pairs.forEach(function (pair) {
+      function on() { pair.hovered = true; update(); }
+      function off() { pair.hovered = false; update(); }
+      pair.anchor.addEventListener("mouseenter", on);
+      pair.anchor.addEventListener("mouseleave", off);
+      pair.anchor.addEventListener("focus", on);
+      pair.anchor.addEventListener("blur", off);
+    });
 
     document.addEventListener("selectionchange", update);
     window.addEventListener("resize", update);
