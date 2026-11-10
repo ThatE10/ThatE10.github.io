@@ -1,0 +1,29 @@
+---
+layout: single
+classes: wide
+---
+{% comment %}
+  LaTeX-article styling for short blog posts.
+  Styles live in assets/css/main.scss under body.layout--latex-post.
+  Supports $inline$ / $$display$$ mathematics (MathJax) and
+  [\comment, remark] hidden notes (assets/js/highlight-comments.js).
+{% endcomment %}
+<p class="latex-byline">
+  <span class="latex-byline__author">{{ page.author_name | default: site.author.name }}</span>
+  {% if page.date %}<span class="latex-byline__date">{{ page.date | date: "%B %-d, %Y" }}</span>{% endif %}
+</p>
+
+{{ content }}
+
+<script src="{{ '/assets/js/highlight-comments.js' | relative_url }}"></script>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [["$", "$"], ["\\(", "\\)"]],
+      displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+      processEscapes: true
+    },
+    chtml: { matchFontHeight: false }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
