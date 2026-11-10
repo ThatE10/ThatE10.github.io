@@ -10,8 +10,31 @@
  * reader's text selection (highlight) touches it.
  */
 (function () {
-  var PATTERN = /\[\\comment,\s*([\s\S]*?)\]/g;
+  var OPEN = "[\\comment,";
   var BLOCKS = "p, li, blockquote, td, th, h1, h2, h3, h4, h5, h6";
+
+  // Replace each [\comment, ...] with a hidden marker span. Brackets are
+  // balanced, so remarks may contain [ ] (for example $\mathbb{E}[X]$).
+  function replaceMarkers(html) {
+    var out = "";
+    var i = 0;
+    var start;
+    while ((start = html.indexOf(OPEN, i)) !== -1) {
+      var depth = 1;
+      var j = start + OPEN.length;
+      while (j < html.length && depth > 0) {
+        if (html[j] === "[") depth++;
+        else if (html[j] === "]") depth--;
+        j++;
+      }
+      if (depth !== 0) break; // unterminated: leave the rest untouched
+      var body = html.slice(start + OPEN.length, j - 1).trim();
+      out += html.slice(i, start) +
+        '<span class="hl-comment-marker" hidden>' + body + "</span>";
+      i = j;
+    }
+    return out + html.slice(i);
+  }
 
   function anchorFor(marker) {
     var prev = marker.previousSibling;
@@ -34,9 +57,7 @@
 
     root.querySelectorAll(BLOCKS).forEach(function (block) {
       if (block.innerHTML.indexOf("[\\comment,") === -1) return;
-      block.innerHTML = block.innerHTML.replace(PATTERN, function (_, body) {
-        return '<span class="hl-comment-marker" hidden>' + body.trim() + "</span>";
-      });
+      block.innerHTML = replaceMarkers(block.innerHTML);
       block.querySelectorAll(".hl-comment-marker").forEach(function (marker) {
         var anchor = anchorFor(marker);
         if (!anchor) return;

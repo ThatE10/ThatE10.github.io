@@ -86,3 +86,87 @@
     opacity: 1;
     visibility: visible;
 }
+
+/* LaTeX-article look for blog posts (see _layouts/latex-post.html).
+   Latin Modern fonts: GUST Font License, self-hosted in assets/fonts. */
+@font-face { font-family: "Latin Modern"; font-style: normal; font-weight: normal; font-display: swap;
+    src: url("../fonts/LM-regular.woff2") format("woff2"); }
+@font-face { font-family: "Latin Modern"; font-style: italic; font-weight: normal; font-display: swap;
+    src: url("../fonts/LM-italic.woff2") format("woff2"); }
+@font-face { font-family: "Latin Modern"; font-style: normal; font-weight: bold; font-display: swap;
+    src: url("../fonts/LM-bold.woff2") format("woff2"); }
+@font-face { font-family: "Latin Modern"; font-style: italic; font-weight: bold; font-display: swap;
+    src: url("../fonts/LM-bold-italic.woff2") format("woff2"); }
+
+$latex-font: "Latin Modern", "Computer Modern Serif", Georgia, Cambria, "Times New Roman", serif;
+
+body.layout--latex-post {
+    .page {
+        float: none;
+        width: 100%;
+        max-width: 40em;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+
+    .page__title,
+    .page__content,
+    .latex-byline {
+        font-family: $latex-font;
+        color: #111;
+    }
+
+    .page__title {
+        margin-top: 1.5em;
+        text-align: center;
+        font-size: 1.9em;
+        font-weight: normal;
+        letter-spacing: 0;
+    }
+
+    .sidebar { display: none; }
+
+    .page__content .latex-byline {
+        margin: 0.75em 0 2.25em;
+        text-indent: 0;
+        text-align: center;
+        font-size: 1.05em;
+        line-height: 1.6;
+
+        span { display: block; }
+    }
+
+    .page__content {
+        font-size: 1.05em;
+        line-height: 1.55;
+
+        p {
+            margin: 0;
+            text-align: justify;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+        }
+
+        p + p { text-indent: 1.5em; }
+        .latex-byline + p { text-indent: 0; }
+
+        a {
+            color: #1a3d8f;
+            text-decoration: none;
+        }
+
+        a.hl-comment-anchor {
+            text-decoration-line: underline;
+            text-decoration-style: dotted;
+        }
+    }
+
+    .page__meta { display: none; }
+
+    .hl-comment {
+        font-family: $latex-font;
+        font-size: 0.85em;
+        color: #222;
+        text-align: left;
+    }
+}
