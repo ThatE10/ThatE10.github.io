@@ -1,9 +1,8 @@
 ---
-layout: single
 title: "Sequence Completion via Harmonic-Mean IRLS"
 permalink: /tools/sequence-irls-writeup/
-author_profile: false
-classes: wide
+section: tools
+math: true
 ---
 
 ## Algorithm HM-IRLS for Low-Rank Hankel Sequence Completion

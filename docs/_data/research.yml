@@ -1,0 +1,44 @@
+# Selected research cards on the homepage, in display order.
+# tile: one of q3r, jussa, taylor, sequence (drawings in _includes/tiles/).
+# authors: Markdown; bold your own name with **...**.
+- tile: q3r
+  pill: NeurIPS 2025
+  title: "Q3R: Quadratic Reweighted Rank Regularizer for Effective Low-Rank Training"
+  url: https://arxiv.org/abs/2511.04485
+  authors: Ipsita Ghosh, **Ethan Nguyen**, Christian Kümmerle
+  links:
+    - label: arXiv
+      url: https://arxiv.org/abs/2511.04485
+    - label: Code
+      url: https://github.com/ThatE10/q3r
+
+- tile: jussa
+  pill: Preprint · 2025
+  title: "But what is your honest answer? Aiding LLM-judges with honest alternatives using steering vectors"
+  url: https://arxiv.org/abs/2505.17760
+  authors: Leon Eshuijs, Archie Chaudhury, Alan McBeth, **Ethan Nguyen**
+  links:
+    - label: arXiv
+      url: https://arxiv.org/abs/2505.17760
+    - label: Code
+      url: https://github.com/watermeleon/judge_with_steered_response
+
+- tile: taylor
+  pill: AISB project
+  title: Extracting model weights via Taylor Unswift inversion
+  url: https://github.com/ThatE10/Extracting-Model-Weights
+  summary: Recovers obfuscated Transformer MLP weights with the Moore–Penrose pseudoinverse.
+  links:
+    - label: Code
+      url: https://github.com/ThatE10/Extracting-Model-Weights
+
+- tile: sequence
+  pill: Demo
+  title: Low-rank linear sequence completion
+  url: /tools/sequence-completion/
+  summary: Completes linear recurrences as low-rank Hankel matrices.
+  links:
+    - label: Try it
+      url: /tools/sequence-completion/
+    - label: Code
+      url: https://github.com/ThatE10/Sequence-Finder-OEIS

@@ -1,0 +1,19 @@
+{%- assign section = page.section | default: layout.section -%}
+<header class="masthead{% if layout.nook_top %} masthead--nook{% endif %}">
+  <div class="masthead__row">
+    {%- if layout.nook_top %}
+    <span class="masthead__nook">{{ site.nook }}</span>
+    {%- endif %}
+    <span class="masthead__rule masthead__rule--l"></span>
+    <a class="masthead__name" href="/">{{ site.data.profile.name }}</a>
+    <span class="masthead__rule masthead__rule--r"></span>
+    <nav class="masthead__nav" aria-label="Primary">
+      <a href="/#research"{% if section == 'research' %} aria-current="page"{% endif %}>Research</a>
+      <a href="/blog/"{% if section == 'writing' %} aria-current="page"{% endif %}>Writing</a>
+      <a class="nav-tools" href="/tools/"{% if section == 'tools' %} aria-current="page"{% endif %}>Tools</a>
+      <a class="nav-about" href="/#about">About</a>
+      <a href="{{ site.data.profile.cv_url }}">CV</a>
+    </nav>
+  </div>
+  <div class="masthead__bar"></div>
+</header>

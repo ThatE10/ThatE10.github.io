@@ -1,73 +1,54 @@
 # Site settings
-title: Ethan's Internet Nook
+title: Ethan Nguyen
+tagline: Interpretability research
+nook: Ethan's Internet Nook
 description: >-
-  Portfolio of Ethan Nguyen — safe, scalable, interpretable AI systems. ML research, outreach, and engineering.
-baseurl: "" # Required for user sites
-url: "https://ThatE10.github.io" # Full GitHub Pages URL for user site
+  Ethan Nguyen studies AI internals: weight-based interpretability,
+  low-rank training, and honest LLM evaluation, toward safe, scalable,
+  and interpretable AI systems.
+baseurl: ""
+url: "https://e-10.net"
+lang: en
 github_username: ThatE10
 repository: ThatE10/ThatE10.github.io
+locale: en_US
 
-# Theme
-remote_theme: "mmistakes/minimal-mistakes@4.24.0"
+# No theme (GitHub Pages would otherwise add Primer): every layout lives in _layouts/, and the stylesheet is inlined
+# from _includes/site.css so pages render without a single blocking request.
 
-# Build settings
+theme: null
+
 markdown: kramdown
 highlighter: rouge
+kramdown:
+  math_engine: mathjax
 
-# Plugins
 plugins:
-  - jekyll-include-cache
-  - jekyll-feed
   - jekyll-sitemap
+  - jekyll-seo-tag
 
-# Directories to include in build
 include:
   - _pages
-  - _includes
-  - assets
 
-# Exclude unnecessary files from build
 exclude:
   - Gemfile
   - Gemfile.lock
   - node_modules
   - vendor/
+  - assets/fonts/README.md
+  - "**/*.patch"
 
-# Defaults (for page-wide layout control)
 defaults:
+  - scope:
+      path: ""
+    values:
+      image: /assets/img/og-wolf-pit.jpg
   - scope:
       path: ""
       type: pages
     values:
-      layout: single
-      author_profile: true  # Changed from false to true
-      classes: wide
+      layout: page
 
-# Minimal Mistakes specific settings
-minimal_mistakes_skin: default
-locale: en-US
-search: false
-paginate: false
-
-# Author settings (this is the correct way for Minimal Mistakes)
 author:
   name: Ethan Nguyen
-  avatar: /assets/images/ethan-portrait.jpg
-  bio: "I build safe, scalable, and interpretable AI systems."
-  location: Charlotte, NC, USA 🦅
-  links:
-    - label: "Google Scholar"
-      icon: "fas fa-graduation-cap"
-      url: "https://scholar.google.com/citations?hl=en&user=MHFb7IIAAAAJ"
-    - label: "LinkedIn"
-      icon: "fab fa-linkedin"
-      url: "https://www.linkedin.com/in/that-ethan-nguyen/"
-    - label: "GitHub"
-      icon: "fab fa-github"
-      url: "https://github.com/ThatE10"
-    - label: "LessWrong"
-      icon: "fas fa-brain"
-      url: "https://www.lesswrong.com/users/thate10"
-    - label: "CV"
-      icon: "fas fa-file"
-      url: "https://docs.google.com/document/d/1Yg-dObFKN_EfkT3dJJqFO5eTYOaExlIg_x6iFjj0Zwg/edit?tab=t.0"
+  url: "https://e-10.net"

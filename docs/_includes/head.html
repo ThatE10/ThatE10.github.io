@@ -1,0 +1,15 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% seo %}
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/icon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="alternate" type="application/atom+xml" title="{{ site.title }} — Writing" href="/feed.xml">
+<link rel="preload" href="/assets/fonts/newsreader-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+{%- if layout.tex %}
+<link rel="preload" href="/assets/fonts/LM-regular.woff2" as="font" type="font/woff2" crossorigin>
+{%- endif %}
+{%- capture css %}{% include site.css %}{% endcapture %}
+<style>{{ css | strip_newlines }}</style>

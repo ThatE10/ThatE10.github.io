@@ -1,9 +1,6 @@
 ---
-layout: single
 title: "Schedule a Meeting"
 permalink: /calendar/
-author_profile: true
-classes: wide
 ---
 
 

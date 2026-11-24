@@ -1,0 +1,57 @@
+# Everything the homepage says about Ethan. Inline Markdown is allowed in
+# `now`, `education` and `about`.
+name: Ethan Nguyen
+statement: >-
+  I study AI internals. My research explores weight-based interpretability,
+  low-rank training, and honest LLM evaluation, with a focus on safe,
+  scalable, and interpretable AI systems.
+now: >-
+  [Pivotal Research](https://www.pivotal-research.org/fellows/ethan-nguyen)
+  fellow in weight-based interpretability, mentored by
+  [Thomas Dooms](https://tdooms.github.io/) and
+  [Logan Riggs](https://scholar.google.com/citations?user=s1C56pIAAAAJ&hl=en)
+education: >-
+  B.S. 2026, mathematics & computer science, UNC Charlotte · nearly four
+  years of research
+about: >-
+  I graduated from UNC Charlotte in 2026 with a B.S. in mathematics and
+  computer science, and have nearly four years of research experience,
+  beginning in non-convex optimization with
+  [Christian Kümmerle](https://ckuemmerle.com/home/). I am now a
+  [Pivotal Research](https://www.pivotal-research.org/fellows/ethan-nguyen)
+  fellow working on weight-based interpretability, mentored by
+  [Thomas Dooms](https://tdooms.github.io/) and
+  [Logan Riggs](https://scholar.google.com/citations?user=s1C56pIAAAAJ&hl=en),
+  and chair the advisory board of Charlotte AI Research.
+location: Charlotte, NC
+
+photo:
+  caption: Wolf Pit, Linville Gorge
+  coordinates: 35° 48′ 47″ N · 81° 54′ 16″ W
+  alt: Wolf Pit in Linville Gorge in autumn, framed by red maple leaves
+
+meet_url: /calendar/
+cv_url: https://docs.google.com/document/d/1Yg-dObFKN_EfkT3dJJqFO5eTYOaExlIg_x6iFjj0Zwg/edit
+
+links:
+  - label: Google Scholar
+    short: Scholar
+    url: https://scholar.google.com/citations?hl=en&user=MHFb7IIAAAAJ
+  - label: GitHub
+    url: https://github.com/ThatE10
+  - label: LinkedIn
+    url: https://www.linkedin.com/in/that-ethan-nguyen/
+  - label: LessWrong
+    url: https://www.lesswrong.com/users/thate10
+  - label: CV
+    url: https://docs.google.com/document/d/1Yg-dObFKN_EfkT3dJJqFO5eTYOaExlIg_x6iFjj0Zwg/edit
+
+erdos:
+  number: 4
+  chain:
+    - Ethan Nguyen
+    - Christian Kümmerle
+    - Mauro Maggioni
+    - Charles Kam-tai Chui
+    - Paul Erdős
+  verify_url: https://mathscinet.ams.org/mathscinet/freetools/collab-dist?source=1299826&target=189017

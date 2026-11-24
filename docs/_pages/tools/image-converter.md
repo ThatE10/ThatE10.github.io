@@ -1,9 +1,9 @@
 ---
-layout: single
 title: "Image Format Converter"
 permalink: /tools/image-converter/
-author_profile: true
-classes: wide
+section: tools
+wide: true
+hide_title: true
 ---
 
 <div class="image-converter-container">

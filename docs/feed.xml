@@ -1,0 +1,29 @@
+---
+layout: null
+permalink: /feed.xml
+sitemap: false
+---
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{{ site.title | xml_escape }} — Writing</title>
+  <subtitle>Notes and essays, on this site and elsewhere.</subtitle>
+  <link href="{{ '/feed.xml' | absolute_url }}" rel="self" type="application/atom+xml"/>
+  <link href="{{ '/blog/' | absolute_url }}" rel="alternate" type="text/html"/>
+  <id>{{ '/blog/' | absolute_url }}</id>
+  <updated>{{ site.data.writing.first.date | date_to_xmlschema }}</updated>
+  <author><name>{{ site.author.name | xml_escape }}</name><uri>{{ site.url }}</uri></author>
+  {%- for post in site.data.writing %}
+  {%- if post.url contains '://' %}{% assign link = post.url %}{% else %}{% assign link = post.url | absolute_url %}{% endif %}
+  <entry>
+    <title>{{ post.title | xml_escape }}</title>
+    <link href="{{ link | xml_escape }}" rel="alternate" type="text/html"/>
+    <id>{{ link | xml_escape }}</id>
+    <updated>{{ post.date | date_to_xmlschema }}</updated>
+    {%- if post.excerpt %}
+    <summary>{{ post.excerpt | xml_escape }}</summary>
+    {%- elsif post.site %}
+    <summary>Published on {{ post.site | xml_escape }}.</summary>
+    {%- endif %}
+  </entry>
+  {%- endfor %}
+</feed>

@@ -1,9 +1,6 @@
 ---
-layout: single
 title: "Pivotal Research — Demo"
 permalink: /demo/pivotal-research/
-author_profile: false
-classes: wide
 sitemap: false
 ---
 
