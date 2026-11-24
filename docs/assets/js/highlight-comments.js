@@ -89,7 +89,10 @@
       var active = sel && !sel.isCollapsed && sel.rangeCount > 0;
       pairs.forEach(function (pair) {
         var selected = active && sel.containsNode(pair.anchor, true);
-        var show = selected || pair.hovered;
+        // Coerce to a boolean: classList.toggle(name, undefined) flips the
+        // class, which made every resize (or phone address-bar scroll)
+        // open the notes.
+        var show = !!(selected || pair.hovered);
         if (show) place(pair.anchor, pair.note);
         pair.note.classList.toggle("is-visible", show);
       });

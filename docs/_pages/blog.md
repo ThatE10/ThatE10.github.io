@@ -1,11 +1,9 @@
 ---
-layout: single
-title: "Blog"
+layout: writing
+title: Writing
+description: Notes and essays, on this site and elsewhere.
 permalink: /blog/
-author_profile: true
-classes: wide
 ---
-
-- **[The One Paragraph Blog]({{ '/blog/one-paragraph-blog/' | relative_url }})** - November 10, 2026
-- **[Cat allergies & Cavities](https://www.lesswrong.com/posts/g6L7ovognMyYALZKb/cat-allergies-and-cavities)** - June 13, 2026
-- **[UNCC AI Research Group: Shaping the Future of AI](https://www.linkedin.com/pulse/uncc-ai-research-group-shaping-future-ethan-nguyen/)** - May 19, 2023
+{%- comment -%}
+  The list comes from _data/writing.yml.
+{%- endcomment -%}

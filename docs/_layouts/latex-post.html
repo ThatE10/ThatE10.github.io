@@ -1,29 +1,51 @@
 ---
-layout: single
-classes: wide
+layout: default
+section: writing
+quiet: true
+tex: true
 ---
-{% comment %}
-  LaTeX-article styling for short blog posts.
-  Styles live in assets/css/main.scss under body.layout--latex-post.
-  Supports $inline$ / $$display$$ mathematics (MathJax) and
-  [\comment, remark] hidden notes (assets/js/highlight-comments.js).
-{% endcomment %}
-<p class="latex-byline">
-  <span class="latex-byline__author">{{ page.author_name | default: site.author.name }}</span>
-  {% if page.date %}<span class="latex-byline__date">{{ page.date | date: "%B %-d, %Y" }}</span>{% endif %}
-</p>
-
-{{ content }}
-
-<script src="{{ '/assets/js/highlight-comments.js' | relative_url }}"></script>
-<script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [["$", "$"], ["\\(", "\\)"]],
-      displayMath: [["$$", "$$"], ["\\[", "\\]"]],
-      processEscapes: true
-    },
-    chtml: { matchFontHeight: false }
-  };
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+{%- comment -%}
+  LaTeX-article post inside the Folio frame. Supports $inline$ / $$display$$
+  mathematics (MathJax, loaded only when the post contains maths) and
+  [\comment, remark] notes (assets/js/highlight-comments.js).
+  Add the post to _data/writing.yml so it is listed.
+{%- endcomment -%}
+{%- assign items = site.data.writing -%}
+{%- for item in items -%}{%- if item.url == page.url -%}{%- assign idx = forloop.index0 -%}{%- endif -%}{%- endfor -%}
+{%- assign words = content | number_of_words -%}
+<article class="post">
+  <div class="split">
+    <div class="split__aside"><a class="kicker" href="/blog/">← Writing</a></div>
+    <header class="split__main post__head">
+      <h1>{{ page.title }}</h1>
+      <p class="post__byline"><span>{{ page.author_name | default: site.author.name }}</span>{% if page.date %}<span><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %-d, %Y" }}</time></span>{% endif %}</p>
+    </header>
+  </div>
+  <div class="split">
+    <aside class="split__aside post-details" aria-label="About this post">
+      {%- if page.format %}
+      <div><p class="label">Format</p><p>{{ page.format }}</p></div>
+      {%- endif %}
+      <div><p class="label">Reading time</p><p>{% if words < 200 %}Under a minute{% else %}{{ words | divided_by: 200 }} min{% endif %}</p></div>
+      {%- if content contains '[\comment,' %}
+      <div><p class="label">Notes</p><p>Dotted words open a note</p></div>
+      {%- endif %}
+    </aside>
+    <div class="split__main post__body">
+      <div class="post__content page__content">
+        {{ content }}
+      </div>
+      <nav class="more-writing" aria-label="More writing">
+        <a href="/blog/">← All writing</a>
+        {%- if idx != nil %}
+          {%- assign older_i = idx | plus: 1 -%}
+          {%- assign older = items[older_i] -%}
+          {%- if older %}
+        <a href="{{ older.url }}">Older: {{ older.title }}{% if older.site %} ↗{% else %} →{% endif %}</a>
+          {%- endif %}
+        {%- endif %}
+      </nav>
+    </div>
+  </div>
+</article>
+<script src="/assets/js/highlight-comments.js" defer></script>

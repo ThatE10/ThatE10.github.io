@@ -1,0 +1,41 @@
+---
+layout: default
+section: writing
+quiet: true
+---
+<div class="split writing-head">
+  <div class="split__aside"></div>
+  <div class="split__main">
+    <h1>{{ page.title | default: 'Writing' }}</h1>
+    {%- if page.description %}
+    <p>{{ page.description }}</p>
+    {%- endif %}
+  </div>
+</div>
+
+<div class="split">
+  <div class="split__aside writing-aside">
+    <p class="label">All posts · {{ site.data.writing | size }}</p>
+    <a href="/feed.xml">RSS feed</a>
+  </div>
+  <div class="split__main">
+    {%- for post in site.data.writing %}
+    <article class="post-row{% if post.picture %} post-row--pic{% endif %}">
+      <div>
+        <span class="pill{% if post.site %} pill--ext{% endif %}">{% if post.site %}{{ post.site }} ↗{% else %}{{ post.kind | default: 'Post' }}{% endif %}</span>
+        <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+        <p class="post-row__date"><time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: "%B %-d, %Y" }}</time></p>
+        {%- if post.excerpt %}
+        <p class="post-row__excerpt">{{ post.excerpt }}</p>
+        {%- endif %}
+        {%- unless post.site %}
+        <a class="post-row__more" href="{{ post.url }}">Read the post →</a>
+        {%- endunless %}
+      </div>
+      {%- if post.picture == 'pilcrow' %}
+      <div class="post-row__pic" aria-hidden="true">¶</div>
+      {%- endif %}
+    </article>
+    {%- endfor %}
+  </div>
+</div>

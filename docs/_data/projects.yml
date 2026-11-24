@@ -1,0 +1,24 @@
+# Homepage lists under "Tools" and "Other projects".
+tools:
+  - title: Image Format Converter
+    url: /tools/image-converter/
+    note: Runs in the browser
+  - title: Linear Sequence Completion
+    url: /tools/sequence-completion/
+    note: Recover a recurrence from a few terms
+  - title: Mouth Routine
+    url: /tools/brush/
+    note: Ten-minute guided timer · works offline
+
+other:
+  - title: Bird species by sound
+    url: https://github.com/ThatE10/Intro-to-ML-Final
+    note: CNN + LSTM audio classifier
+  - title: Fertilizer Platform
+    url: https://github.com/yalama01/hackuncp
+    note: HackUNCP
+  - title: Mail Processor
+    url: https://github.com/ThatE10/mailprocessor
+    note: Sender extraction and spam detection
+  - title: Apollo
+    note: Autonomous campus meal delivery · ROS2

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'en' }}">
+<head>
+{% include head.html %}
+</head>
+<body{% if layout.quiet %} class="quiet"{% endif %}>
+<a class="skip" href="#main">Skip to content</a>
+<div class="page">
+  <div class="wrap">
+    {% include masthead.html %}
+  </div>
+  <main id="main" class="wrap">
+    {{ content }}
+  </main>
+  <div class="wrap">
+    {% include footer.html %}
+  </div>
+</div>
+{%- if page.math or content contains '\(' or content contains '\[' %}
+<script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"],["\\[","\\]"]],processEscapes:true},chtml:{matchFontHeight:false}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+{%- endif %}
+<script>if("serviceWorker"in navigator)addEventListener("load",function(){navigator.serviceWorker.register("/sw.js")});</script>
+</body>
+</html>

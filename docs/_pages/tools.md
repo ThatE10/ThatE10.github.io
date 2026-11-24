@@ -1,9 +1,7 @@
 ---
-layout: single
 title: "Tools & Utilities"
 permalink: /tools/
-author_profile: true
-classes: wide
+section: tools
 ---
 
 ## 🛠️ Development Tools

@@ -1,0 +1,23 @@
+# Every post, newest first. Posts on this site live in _pages/blog/ and use
+# `layout: latex-post`; add one line here for each so it appears on the
+# Writing page, the homepage and in /feed.xml.
+# kind: label for posts on this site; site: name of the host for posts elsewhere.
+# picture: pilcrow shows the ¶ panel beside the post on the Writing page.
+- title: The One Paragraph Blog
+  url: /blog/one-paragraph-blog/
+  date: 2026-11-10
+  kind: Paragraph post
+  picture: pilcrow
+  excerpt: >-
+    Often times I find it difficult to finish writing. To solve for this I
+    will try to keep my writings short and concise…
+
+- title: Cat allergies & cavities
+  url: https://www.lesswrong.com/posts/g6L7ovognMyYALZKb/cat-allergies-and-cavities
+  date: 2026-06-13
+  site: LessWrong
+
+- title: "UNCC AI Research Group: Shaping the Future of AI"
+  url: https://www.linkedin.com/pulse/uncc-ai-research-group-shaping-future-ethan-nguyen/
+  date: 2023-05-19
+  site: LinkedIn

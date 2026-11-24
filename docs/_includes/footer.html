@@ -1,0 +1,11 @@
+<footer class="site-footer">
+  <div class="fleuron" aria-hidden="true"><span class="glyph">❦</span></div>
+  <div class="site-footer__row">
+    <nav class="site-footer__links" aria-label="Elsewhere">
+      {%- for link in site.data.profile.links %}
+      <a href="{{ link.url }}">{{ link.label }}</a>
+      {%- endfor %}
+    </nav>
+    <span class="site-footer__place">{% unless layout.nook_top %}{{ site.nook }} · {% endunless %}{{ site.data.profile.location }}</span>
+  </div>
+</footer>

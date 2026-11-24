@@ -1,9 +1,8 @@
 ---
-layout: single
 title: ""
 permalink: /tools/sequence-completion/
-author_profile: true
-classes: wide
+section: tools
+wide: true
 ---
 
 <!-- Manim.js and related includes -->

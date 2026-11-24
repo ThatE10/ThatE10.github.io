@@ -1,0 +1,93 @@
+---
+layout: default
+nook_top: true
+---
+{%- assign p = site.data.profile -%}
+<h1 class="sr-only">{{ p.name }}</h1>
+<section class="hero">
+  <figure class="hero__figure">
+    <div class="roundel">
+      <picture>
+        <source type="image/webp" srcset="/assets/img/wolf-pit-280.webp 280w, /assets/img/wolf-pit-368.webp 368w" sizes="(max-width: 700px) 140px, 184px">
+        <img src="/assets/img/wolf-pit-368.jpg" width="184" height="184" alt="{{ p.photo.alt }}" fetchpriority="high" decoding="async">
+      </picture>
+      <span class="roundel__badge" aria-hidden="true">e!</span>
+    </div>
+    <figcaption class="hero__caption">{{ p.photo.caption }}<br>{{ p.photo.coordinates | replace: " · ", "<br>" }}</figcaption>
+  </figure>
+  <div class="hero__text">
+    <p class="statement">{{ p.statement }}</p>
+    <p class="hero__meta"><strong>Now</strong> · {{ p.now | markdownify | remove: '<p>' | remove: '</p>' | strip }}<br>{{ p.education | markdownify | remove: '<p>' | remove: '</p>' | strip }}</p>
+    <div class="actions">
+      <a class="btn-meet" href="{{ p.meet_url }}"><span class="glyph" aria-hidden="true">☞</span>Meet with me</a>
+      {%- for link in p.links %}{% if link.label == 'Google Scholar' or link.label == 'CV' or link.label == 'GitHub' %}
+      <a{% if link.label == 'CV' %} class="actions__cv"{% endif %} href="{{ link.url }}">{{ link.label }}</a>
+      {%- endif %}{% endfor %}
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section id="research" class="research" aria-labelledby="research-label">
+  <h2 id="research-label" class="label">Selected research</h2>
+  <div class="cards">
+    {%- for item in site.data.research %}
+    <article class="card">
+      {% include tiles/{{ item.tile }}.svg %}
+      <div class="card__body">
+        <span class="pill">{{ item.pill }}</span>
+        <h3 class="card__title"><a href="{{ item.url }}">{{ item.title }}</a></h3>
+        {%- if item.authors %}
+        <p class="card__authors">{{ item.authors | markdownify | remove: '<p>' | remove: '</p>' | strip }}</p>
+        {%- endif %}
+        {%- if item.summary %}
+        <p class="card__authors">{{ item.summary }}</p>
+        {%- endif %}
+        <p class="card__links">{% for l in item.links %}<a href="{{ l.url }}">{{ l.label }}</a>{% endfor %}</p>
+      </div>
+    </article>
+    {%- endfor %}
+  </div>
+</section>
+
+<section class="lists">
+  <div>
+    <h2 class="label">Writing</h2>
+    <ul class="plain">
+      {%- for post in site.data.writing limit: 2 %}
+      <li><a class="plain__title" href="{{ post.url }}">{{ post.title }}</a><div class="plain__note">{{ post.date | date: "%-d %b %Y" }}{% if post.site %} · {{ post.site }}{% endif %}</div></li>
+      {%- endfor %}
+      <li><a class="plain__more" href="/blog/">All writing →</a></li>
+    </ul>
+  </div>
+  <div>
+    <h2 class="label">Tools</h2>
+    <ul class="plain">
+      {%- for tool in site.data.projects.tools %}
+      <li><a class="plain__title" href="{{ tool.url }}">{{ tool.title }}</a><div class="plain__note">{{ tool.note }}</div></li>
+      {%- endfor %}
+    </ul>
+  </div>
+  <div>
+    <h2 class="label">Other projects</h2>
+    <ul class="plain">
+      {%- for project in site.data.projects.other %}
+      <li>{% if project.url %}<a class="plain__title" href="{{ project.url }}">{{ project.title }}</a>{% else %}<span class="plain__title">{{ project.title }}</span>{% endif %}<div class="plain__note">{{ project.note }}</div></li>
+      {%- endfor %}
+    </ul>
+  </div>
+</section>
+
+<section id="about" class="about" aria-label="About">
+  <p class="about__text">{{ p.about | markdownify | remove: '<p>' | remove: '</p>' | strip }}</p>
+  <div class="about__erdos">
+    <h2>Erdős number {{ p.erdos.number }}</h2>
+    <ol class="lineage">
+      {%- for person in p.erdos.chain %}
+      <li>{{ person }}</li>
+      {%- endfor %}
+    </ol>
+    <a class="about__verify" href="{{ p.erdos.verify_url }}">Verify on MathSciNet ↗</a>
+  </div>
+</section>
